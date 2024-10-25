@@ -1,3 +1,4 @@
+import './global.css';
 import 'react-native-gesture-handler';
 import Navigator from './src/navigates';
 import { StatusBar } from 'react-native';

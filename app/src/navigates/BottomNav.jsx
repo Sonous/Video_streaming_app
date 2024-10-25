@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import Upload from '../pages/Upload';
 import Profile from '../pages/Profile';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Search from '../pages/Search';
 
 const BottomStack = createBottomTabNavigator();
 
@@ -19,7 +20,9 @@ export default function BottomNav() {
                     if (route.name === 'Home') {
                         iconName = focused ? 'home' : 'home-outline';
                     } else if (route.name === 'Upload') {
-                        iconName = focused ? 'plus-box' : 'plus-box-outline';
+                        iconName = focused ? 'plus-circle' : 'plus-circle-outline';
+                    } else if (route.name === 'Search') {
+                        iconName = 'magnify';
                     } else if (route.name === 'Profile') {
                         iconName = focused ? 'account' : 'account-outline';
                     }
@@ -29,6 +32,7 @@ export default function BottomNav() {
             })}
         >
             <BottomStack.Screen name="Home" component={Home} />
+            <BottomStack.Screen name="Search" component={Search} />
             <BottomStack.Screen name="Upload" component={Upload} />
             <BottomStack.Screen name="Profile" component={Profile} />
         </BottomStack.Navigator>
