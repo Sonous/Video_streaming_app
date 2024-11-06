@@ -10,6 +10,7 @@ import authApi from '../apis/authApi';
 import { UserContext } from '../context/UserProvider';
 import { validateEmail } from '../utils';
 
+
 export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -28,7 +29,7 @@ export default function Login({ navigation }) {
     const handleLoginWithEmailPassword = async () => {
         try {
             const user = await authApi.login(email, password);
-
+          
             setUser(user);
             setIsAuth(true);
             navigation.popToTop();
@@ -88,6 +89,7 @@ export default function Login({ navigation }) {
                     type={'primary'}
                     onPress={handleLoginWithEmailPassword}
                     disabled={!email || !password || errorEmail || false}
+
                 />
 
                 <View className="flex-row justify-center">
