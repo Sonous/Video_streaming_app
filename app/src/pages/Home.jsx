@@ -1,7 +1,9 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 import MainLayout from '../layouts/MainLayout';
-// import { storage } from '../../firebase.config';
+import firebase, { storage } from '../../firebase.config';
+
+// console.log(new Date());
 
 // const storageRef = storage.ref();
 // storageRef
