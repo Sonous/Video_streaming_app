@@ -22,7 +22,7 @@ export default function Input({
 
     const handleClearInput = () => {
         setState('');
-        if (typeof onSetInput === 'function') onClearInput();
+        if (typeof onClearInput === 'function') onClearInput();
     };
 
     const handlehidePassword = () => {
