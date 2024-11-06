@@ -1,9 +1,11 @@
 import { View, Text } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import SettingLayout from '../layouts/SettingLayout';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { validateEmail } from '../utils';
+import authApi from '../apis/authApi';
+import { UserContext } from '../context/UserProvider';
 
 export default function Signup({ navigation }) {
     const [email, setEmail] = useState('');
@@ -11,6 +13,7 @@ export default function Signup({ navigation }) {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [ErrorEmail, setErrorEmail] = useState('');
     const [ErrorConfirmPassword, setErrorConfirmPassword] = useState('');
+    const { setUser, setIsAuth } = useContext(UserContext);
 
     const handleValidEmail = (input) => {
         if (input && !validateEmail(input)) {
@@ -28,10 +31,16 @@ export default function Signup({ navigation }) {
         }
     };
 
-    const handleSignup = () => {
-        // if  {
-        // }
-        console.log('hfisdfi');
+    const handleSignup = async () => {
+        try {
+            const user = await authApi.register(email, password);
+
+            setUser(user);
+            setIsAuth(true);
+            navigation.popToTop();
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleNavLogin = () => {

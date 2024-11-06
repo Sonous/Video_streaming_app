@@ -2,6 +2,7 @@ import { View, Text, ScrollView } from 'react-native';
 import React from 'react';
 import SettingBox from './SettingBox';
 import SettingLayout from '../../layouts/SettingLayout';
+import authApi from '../../apis/authApi';
 
 const settingItems = [
     {
@@ -25,7 +26,17 @@ const settingItems = [
                 iconName: 'logout',
                 title: 'Logout',
                 showArrow: false,
-                nav: 'Login',
+                nav: 'BottomNav',
+                async onPress(setIsAuth, setUser) {
+                    try {
+                        await authApi.logout();
+
+                        setUser(null);
+                        setIsAuth(false);
+                    } catch (error) {
+                        throw error;
+                    }
+                },
             },
         ],
     },

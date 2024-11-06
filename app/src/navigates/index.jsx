@@ -9,6 +9,7 @@ import ProfileEditingStack from './ProfileEditingStack';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Forgot from '../pages/Forgot';
+import Preview from '../pages/Upload/Preview';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ export default function Navigator() {
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Signup" component={Signup} />
                 <Stack.Screen name="Forgot" component={Forgot} />
+                <Stack.Screen name="Preview" component={Preview} />
             </Stack.Navigator>
         </NavigationContainer>
     );

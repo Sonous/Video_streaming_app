@@ -1,8 +1,11 @@
 import { View, Text } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import SettingItem from './SettingItem';
+import { UserContext } from '../../context/UserProvider';
 
 export default function SettingBox({ label, data, navigation }) {
+    const { setIsAuth, setUser } = useContext(UserContext);
+
     const handleEvent = (item) => {
         if (item.nav) {
             navigation.navigate(`${item.nav}`);
@@ -22,7 +25,17 @@ export default function SettingBox({ label, data, navigation }) {
                         title={item.title}
                         showArrow={item.showArrow}
                         value={item.value}
-                        onPress={() => handleEvent(item)}
+                        onPress={async () => {
+                            try {
+                                if (typeof item.onPress === 'function') {
+                                    await item.onPress(setIsAuth, setUser);
+                                }
+
+                                handleEvent(item);
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        }}
                     />
                 ))}
             </View>
