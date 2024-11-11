@@ -10,7 +10,10 @@ const authApi = {
             const user = await dbApi.getUserData(userCredential.user.uid);
 
             console.log('successed');
-            return user;
+            return {
+                userId: userCredential.user.uid,
+                ...user,
+            };
         } catch (error) {
             throw error;
         }

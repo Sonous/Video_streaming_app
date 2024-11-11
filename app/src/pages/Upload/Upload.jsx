@@ -10,7 +10,7 @@ import { UserContext } from '../../context/UserProvider';
 const { height } = Dimensions.get('window');
 
 export default function Upload({ navigation }) {
-    const { isAuth } = useContext(UserContext);
+    const { isAuth, user } = useContext(UserContext);
 
     const generateThumbnail = async (videoUri) => {
         try {
@@ -38,12 +38,12 @@ export default function Upload({ navigation }) {
             });
 
             if (!result.canceled) {
-                // setMedia(result.assets[0]);
                 const uri = await generateThumbnail(result.assets[0].uri);
 
                 navigation.navigate('Preview', {
                     videoObj: result.assets[0],
                     videoThumbnail: uri,
+                    userId: user.userId,
                 });
             }
         } catch (error) {

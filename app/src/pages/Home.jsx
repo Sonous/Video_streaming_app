@@ -11,6 +11,8 @@ import firebase, { storage } from '../../firebase.config';
 //     .getDownloadURL()
 //     .then((res) => console.log(res));
 
+// console.log(process.env.EXPO_PUBLIC_API_KEY);
+
 export default function Home() {
     return (
         <MainLayout>

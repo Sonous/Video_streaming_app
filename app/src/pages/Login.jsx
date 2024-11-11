@@ -9,6 +9,7 @@ import Button from '../components/Button';
 import authApi from '../apis/authApi';
 import { UserContext } from '../context/UserProvider';
 import { validateEmail } from '../utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ export default function Login({ navigation }) {
     const handleLoginWithEmailPassword = async () => {
         try {
             const user = await authApi.login(email, password);
+            AsyncStorage.setItem('userId', user.userId);
 
             setUser(user);
             setIsAuth(true);
@@ -79,8 +81,10 @@ export default function Login({ navigation }) {
                     />
                     {isError && <Text className="text-red-600">Wrong email or password!</Text>}
                 </View>
-                <View onTouchStart={handleForgotPass}>
-                    <Text className="font-semibold">Forgot password?</Text>
+                <View className="flex-row">
+                    <Text className="font-semibold" onTouchStart={handleForgotPass}>
+                        Forgot password?
+                    </Text>
                 </View>
 
                 <Button
