@@ -11,6 +11,7 @@ import { UserContext } from '../context/UserProvider';
 import { validateEmail } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -29,6 +30,7 @@ export default function Login({ navigation }) {
     const handleLoginWithEmailPassword = async () => {
         try {
             const user = await authApi.login(email, password);
+
             AsyncStorage.setItem('userId', user.userId);
 
             setUser(user);
@@ -92,6 +94,7 @@ export default function Login({ navigation }) {
                     type={'primary'}
                     onPress={handleLoginWithEmailPassword}
                     disabled={!email || !password || errorEmail || false}
+
                 />
 
                 <View className="flex-row justify-center">
