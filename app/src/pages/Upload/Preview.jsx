@@ -6,11 +6,12 @@ import SettingLayout from '../../layouts/SettingLayout';
 import Button from '../../components/Button';
 import storageApi from '../../apis/storageApi';
 import Loader from '../../components/Loader';
+import dbApi from '../../apis/dbApi';
 
 const { height } = Dimensions.get('window');
 
 export default function Preview({ navigation }) {
-    const { videoObj, videoThumbnail } = useRoute().params;
+    const { videoObj, videoThumbnail, userId } = useRoute().params;
     const [description, setDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [objUploadingThumbnail, setObjUploadingThumbnail] = useState();
@@ -32,6 +33,9 @@ export default function Preview({ navigation }) {
 
             const videoDowloadUrl = await videoProcess.promise;
             const thumbnailDowloadUrl = await thumbnailProcess.promise;
+
+            // Save video info to db
+            const video = await dbApi.saveVideoInfo(userId, videoDowloadUrl, thumbnailDowloadUrl, description);
 
             setIsLoading(false);
             console.log('upload successfully!');

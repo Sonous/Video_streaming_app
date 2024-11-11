@@ -1,12 +1,13 @@
 import { View, Text, TextInput } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import EditingLayout from '../../layouts/EditingLayout';
 import classNames from 'classnames';
+import { UserContext } from '../../context/UserProvider';
+import dbApi from '../../apis/dbApi';
 
 export default function BioEditing({ navigation }) {
-    const [bioInput, setBioInput] = useState(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vestibulum dui.',
-    );
+    const { user, setUser } = useContext(UserContext);
+    const [bioInput, setBioInput] = useState(user.bio);
 
     const [inputLength, setInputLength] = useState(bioInput.length);
 
@@ -15,8 +16,22 @@ export default function BioEditing({ navigation }) {
         setInputLength(text.length);
     };
 
+    const handleSave = async () => {
+        try {
+            await dbApi.updateUserInfo(user.userId, {
+                bio: bioInput,
+            });
+            const result = await dbApi.getUserData(user.userId);
+
+            setUser((prev) => ({ ...prev, ...result }));
+            navigation.goBack();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
-        <EditingLayout title={'Bio'} navigation={navigation}>
+        <EditingLayout title={'Bio'} navigation={navigation} handleSave={handleSave}>
             <TextInput
                 value={bioInput}
                 onChangeText={handleSetInput}
