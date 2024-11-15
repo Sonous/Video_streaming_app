@@ -1,4 +1,4 @@
-import { auth } from '../../firebase.config';
+import firebase, { auth } from '../../firebase.config';
 import dbApi from './dbApi';
 
 const authApi = {
@@ -40,6 +40,31 @@ const authApi = {
         try {
             await auth.signOut();
             console.log('Sign-out successful.');
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async loginWithGithubAccount(access_token) {
+        try {
+            const credential = firebase.auth.GithubAuthProvider.credential(access_token);
+
+            console.log('start sign in with firebase');
+
+            const data = await auth.signInWithCredential(credential);
+
+            if (data.additionalUserInfo.isNewUser) {
+                await dbApi.addNewUserToDb(data.user.uid, data.user.email, data.user.photoURL, data.user.displayName);
+            }
+
+            const user = await dbApi.getUserData(data.user.uid);
+
+            console.log('success');
+
+            return {
+                userId: data.user.uid,
+                ...user,
+            };
         } catch (error) {
             throw error;
         }

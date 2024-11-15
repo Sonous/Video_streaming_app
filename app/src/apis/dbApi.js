@@ -18,19 +18,23 @@ const dbApi = {
         }
     },
 
-    async addNewUserToDb(uid, email) {
+    async addNewUserToDb(uid, email = '', phone = '', profilePicture = '', displayName = '') {
         try {
-            await db.collection('users').doc(uid).set({
-                username: generateRandomString(),
-                email,
-                profilePicture: '',
-                bio: '',
-                followers: [],
-                following: [],
-                likesCount: 0,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            });
+            await db
+                .collection('users')
+                .doc(uid)
+                .set({
+                    username: displayName || generateRandomString(),
+                    email,
+                    profilePicture,
+                    bio: '',
+                    phone,
+                    followers: [],
+                    following: [],
+                    likesCount: 0,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                });
         } catch (error) {
             throw error;
         }
