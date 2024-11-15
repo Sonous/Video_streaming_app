@@ -6,6 +6,8 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const { height } = Dimensions.get('window');
 
+// console.log(process.env.EXPO_PUBLIC_API_KEY);
+
 export default function Home() {
     const [videoUrls, setVideoUrls] = useState([]);
     const videoRefs = useRef([]);
