@@ -1,22 +1,70 @@
 import { View, Text } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 
 import SettingLayout from '../layouts/SettingLayout';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import authApi from '../apis/authApi';
 import { UserContext } from '../context/UserProvider';
-import { validateEmail } from '../utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createTokenWithCode, validateEmail } from '../utils';
+
+WebBrowser.maybeCompleteAuthSession();
+
+// Endpoint
+const discovery = {
+    authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+    tokenEndpoint: 'https://github.com/login/oauth/access_token',
+    revocationEndpoint: `https://github.com/settings/connections/applications/${process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID}`,
+};
 
 export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isError, setIsError] = useState(false);
     const [errorEmail, setErrorEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { setUser, setIsAuth } = useContext(UserContext);
+
+    // Login with github
+    const [request, response, promptAsync] = useAuthRequest(
+        {
+            clientId: process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID,
+            scopes: [],
+            redirectUri: makeRedirectUri(),
+        },
+        discovery,
+    );
+
+    useEffect(() => {
+        handleResponse();
+    }, [response]);
+
+    const handleResponse = async () => {
+        try {
+            if (response?.type === 'success') {
+                const { code } = response.params;
+
+                const { access_token } = await createTokenWithCode(code);
+
+                if (!access_token) return;
+
+                const user = await authApi.loginWithGithubAccount(access_token);
+
+                AsyncStorage.setItem('userId', user.userId);
+
+                setUser(user);
+                setIsAuth(true);
+                navigation.popToTop();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const handleValidEmail = (input) => {
         if (input && !validateEmail(input)) {
@@ -29,6 +77,7 @@ export default function Login({ navigation }) {
     const handleLoginWithEmailPassword = async () => {
         try {
             const user = await authApi.login(email, password);
+
             AsyncStorage.setItem('userId', user.userId);
 
             setUser(user);
@@ -103,7 +152,9 @@ export default function Login({ navigation }) {
                 <TouchableOpacity
                     className="border-[1px] border-black items-center rounded-lg bg-neutral-200 p-2"
                     activeOpacity={0.5}
-                    // onPress={handelLoginWith }
+                    onPress={() => {
+                        promptAsync();
+                    }}
                 >
                     <View className="flex-row gap-3 items-center">
                         <Icon name="github" size={30} />
