@@ -21,7 +21,7 @@ export default function ProfileEditing({ navigation }) {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 allowsEditing: true,
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                mediaTypes: ['images'],
                 quality: 1,
             });
 
@@ -64,7 +64,7 @@ export default function ProfileEditing({ navigation }) {
             <View className="p-5 gap-5">
                 <SettingItem
                     title={'Name'}
-                    value={truncateText(user.username)}
+                    value={truncateText(user.name)}
                     onPress={() => handleShowInput('NameEditing')}
                 />
                 <SettingItem

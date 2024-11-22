@@ -1,6 +1,7 @@
 import { View, Text, Image, Dimensions } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/AntDesign';
 import classNames from 'classnames';
 
 import QuantityBox from '../../components/QuantityBox';
@@ -11,6 +12,7 @@ import { formatViews } from '../../utils';
 import { UserContext } from '../../context/UserProvider';
 import dbApi from '../../apis/dbApi';
 import { db } from '../../../firebase.config';
+import { useRoute } from '@react-navigation/native';
 
 const { height } = Dimensions.get('window');
 
@@ -23,13 +25,20 @@ export default function Profile({ navigation }) {
     const [currentSubPage, setCurrentSubPage] = useState('post');
     const [postedVideos, setPostedVideos] = useState([]);
     const [markedVideos, setMarkedVideos] = useState([]);
+
+    const [otherPerson, setOtherPerson] = useState(null);
+    const [relationship, setRelationShip] = useState('stranger');
+    const [reload, setReload] = useState(false);
     const { isAuth, user } = useContext(UserContext);
+    const route = useRoute();
+
+    // console.log(user);
 
     useEffect(() => {
-        if (user) {
+        if (user || route.params?.personId) {
             const unsubscribePostedVideo = db
                 .collection('videos')
-                .where('userId', '==', user.userId)
+                .where('userId', '==', route.params?.personId || user.userId)
                 .onSnapshot((querySnapshot) => {
                     const videos = [];
                     querySnapshot.forEach((doc) => {
@@ -40,7 +49,7 @@ export default function Profile({ navigation }) {
 
             const unsubscribeMarkedVideo = db
                 .collection('bookmarks')
-                .where('userId', '==', user.userId)
+                .where('userId', '==', route.params?.personId || user.userId)
                 .onSnapshot((querySnapshot) => {
                     const videosPendingPromise = [];
 
@@ -63,46 +72,180 @@ export default function Profile({ navigation }) {
         }
     }, [user]);
 
+    useEffect(() => {
+        const fetchApi = async () => {
+            const data = await dbApi.getUserData(route.params?.personId);
+
+            const isStayInFollowers = user.followers.includes(data.userId);
+            const isStayInFollowing = user.following.includes(data.userId);
+
+            if (isStayInFollowers && isStayInFollowing) {
+                setRelationShip('friend');
+            } else if (isStayInFollowers) {
+                setRelationShip('follower');
+            } else if (isStayInFollowing) {
+                setRelationShip('following');
+            } else {
+                setRelationShip('stranger');
+            }
+
+            setOtherPerson(data);
+        };
+
+        if (route.params?.personId) {
+            fetchApi();
+        }
+    }, [reload]);
+
     const handleSwitchSubPage = (subPage) => {
         setCurrentSubPage(subPage);
     };
 
-    const handleNav = (dest) => {
-        navigation.navigate(dest);
+    const handleNav = (dest, params = {}) => {
+        navigation.navigate(dest, {
+            ...params,
+        });
     };
+
+    const handleFollow = async () => {
+        await dbApi.updateUserInfo(otherPerson.userId, {
+            followers: [...otherPerson.followers, user.userId],
+        });
+        await dbApi.updateUserInfo(user.userId, {
+            following: [...user.following, otherPerson.userId],
+        });
+
+        setReload(!reload);
+    };
+
+    const handleRemoveFollow = async () => {
+        await dbApi.updateUserInfo(otherPerson.userId, {
+            followers: otherPerson.followers.filter((follower) => follower !== user.userId),
+        });
+        await dbApi.updateUserInfo(user.userId, {
+            following: user.following.filter((following) => following !== otherPerson.userId),
+        });
+
+        setReload(!reload);
+    };
+
+    const handleOpenMessage = () => {
+        navigation.navigate('ChatRoom', {
+            friendId: otherPerson.userId,
+        });
+    };
+
+    console.log(relationship);
+    console.log(user);
 
     return (
         <>
             {isAuth && user ? (
-                <ProfileLayout type="personal" navigation={navigation}>
+                <ProfileLayout
+                    type={otherPerson ? 'other' : 'personal'}
+                    title={otherPerson?.name}
+                    navigation={navigation}
+                >
                     <View className="p-2">
                         <View className="items-center gap-3">
                             <View className="items-center">
-                                <Image
-                                    source={
-                                        user.profilePicture
-                                            ? { uri: user.profilePicture }
-                                            : require('../../assets/images/avatar_placeholder.png')
-                                    }
-                                    className="w-24 h-24 rounded-full"
-                                />
-                                <Text className="text-lg font-semibold text-center">{user.username}</Text>
+                                {otherPerson ? (
+                                    <Image
+                                        source={
+                                            otherPerson.profilePicture
+                                                ? { uri: otherPerson.profilePicture }
+                                                : require('../../assets/images/avatar_placeholder.png')
+                                        }
+                                        className="w-24 h-24 rounded-full"
+                                    />
+                                ) : (
+                                    <Image
+                                        source={
+                                            user.profilePicture
+                                                ? { uri: user.profilePicture }
+                                                : require('../../assets/images/avatar_placeholder.png')
+                                        }
+                                        className="w-24 h-24 rounded-full"
+                                    />
+                                )}
+
+                                <Text className="text-lg font-semibold text-center">
+                                    @{otherPerson ? otherPerson.username : user.username}
+                                </Text>
                             </View>
                             <View className="flex-row">
-                                <QuantityBox quantity={user.following.length} title={'Following'} />
-                                <QuantityBox quantity={user.followers.length} title={'Followers'} />
-                                <QuantityBox quantity={user.likesCount} title={'Likes'} />
+                                <QuantityBox
+                                    quantity={otherPerson ? otherPerson?.following.length : user.following.length}
+                                    title={'Following'}
+                                    onPress={() =>
+                                        handleNav('FollowStack', {
+                                            page: 'Following',
+                                            personId: otherPerson ? otherPerson.userId : user.userId,
+                                        })
+                                    }
+                                />
+                                <QuantityBox
+                                    quantity={otherPerson ? otherPerson?.followers.length : user.followers.length}
+                                    title={'Follower'}
+                                    onPress={() =>
+                                        handleNav('FollowStack', {
+                                            page: 'Follower',
+                                            personId: otherPerson ? otherPerson.userId : user.userId,
+                                        })
+                                    }
+                                />
+                                <QuantityBox
+                                    quantity={otherPerson ? otherPerson?.likesCount : user.likesCount}
+                                    title={'Likes'}
+                                />
                             </View>
-                            <View className="flex-row gap-3">
-                                <Button
-                                    title={'Edit profile'}
-                                    type="gray"
-                                    onPress={() => handleNav('ProfileEditingStack')}
-                                />
-                                <Button
-                                    Icon={<MaterialCommunityIcons name="account-plus-outline" size={25} />}
-                                    type={'gray'}
-                                />
+                            <View className="flex-row gap-2">
+                                {otherPerson ? (
+                                    <>
+                                        {!['friend', 'following'].includes(relationship) && (
+                                            <Button
+                                                title={relationship === 'follower' ? 'Follow back' : 'Follow'}
+                                                type={'primary'}
+                                                onPress={handleFollow}
+                                            />
+                                        )}
+                                        <Button
+                                            Icon={<MaterialCommunityIcons name={'send'} size={25} />}
+                                            title={'Message'}
+                                            type={'gray'}
+                                            onPress={handleOpenMessage}
+                                        />
+                                        {['friend', 'following'].includes(relationship) && (
+                                            <Button
+                                                Icon={
+                                                    <MaterialCommunityIcons
+                                                        name={
+                                                            relationship === 'friend'
+                                                                ? 'account-multiple'
+                                                                : 'account-check'
+                                                        }
+                                                        size={25}
+                                                    />
+                                                }
+                                                type={'gray'}
+                                                onPress={handleRemoveFollow}
+                                            />
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button
+                                            title={'Edit profile'}
+                                            type="gray"
+                                            onPress={() => handleNav('ProfileEditingStack')}
+                                        />
+                                        <Button
+                                            Icon={<Icon name="adduser" size={25} />}
+                                            type="gray"
+                                            onPress={() => navigation.navigate('AddFriendStack')}
+                                        />
+                                    </>
+                                )}
                             </View>
                             {user.bio && <Text>{user.bio}</Text>}
                         </View>
@@ -172,7 +315,12 @@ export default function Profile({ navigation }) {
                     <View className="w-[300px] items-center">
                         <MaterialCommunityIcons name="account-outline" size={100} color={'#b6b6b6'} />
                         <Text>Log into existing account</Text>
-                        <Button title={'Login'} type={'primary'} onPress={() => navigation.navigate('Login')} />
+                        <Button
+                            title={'Login'}
+                            type={'primary'}
+                            onPress={() => navigation.navigate('Login')}
+                            className="w-full"
+                        />
                     </View>
                 </View>
             )}

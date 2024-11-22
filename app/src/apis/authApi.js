@@ -7,6 +7,9 @@ const authApi = {
             console.log('login...');
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
 
+            await dbApi.updateUserInfo(userCredential.user.uid, {
+                isActive: true,
+            });
             const user = await dbApi.getUserData(userCredential.user.uid);
 
             console.log('successed');
@@ -36,8 +39,13 @@ const authApi = {
         }
     },
 
-    async logout() {
+    async logout(userId) {
         try {
+            console.log(userId);
+            await dbApi.updateUserInfo(userId, {
+                isActive: false,
+            });
+
             await auth.signOut();
             console.log('Sign-out successful.');
         } catch (error) {
@@ -56,6 +64,10 @@ const authApi = {
             if (data.additionalUserInfo.isNewUser) {
                 await dbApi.addNewUserToDb(data.user.uid, data.user.email, data.user.photoURL, data.user.displayName);
             }
+
+            await dbApi.updateUserInfo(data.user.uid, {
+                isActive: true,
+            });
 
             const user = await dbApi.getUserData(data.user.uid);
 

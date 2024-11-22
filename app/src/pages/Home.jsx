@@ -11,8 +11,7 @@ const { height } = Dimensions.get('window');
 export default function Home() {
     const [videoUrls, setVideoUrls] = useState([]);
     const videoRefs = useRef([]);
-    const [currentIndex, setCurrentIndex] = useState(null); 
-
+    const [currentIndex, setCurrentIndex] = useState(null);
 
     useEffect(() => {
         const fetchAllVideos = async () => {
@@ -23,7 +22,7 @@ export default function Home() {
                 const urls = await Promise.all(urlPromises);
                 setVideoUrls(urls);
             } catch (error) {
-                alert.error("Lỗi khi lấy danh sách video:", error);
+                alert.error('Lỗi khi lấy danh sách video:', error);
             }
         };
 
@@ -31,9 +30,8 @@ export default function Home() {
     }, []);
 
     const onViewableItemsChanged = ({ viewableItems }) => {
-        videoRefs.current.forEach(video => video?.pauseAsync());
+        videoRefs.current.forEach((video) => video?.pauseAsync());
 
-     
         if (viewableItems.length > 0) {
             const index = viewableItems[0].index;
             videoRefs.current[index]?.playAsync();
@@ -56,7 +54,6 @@ export default function Home() {
         }
     };
 
-    
     useFocusEffect(
         React.useCallback(() => {
             if (currentIndex !== null) {
@@ -64,36 +61,37 @@ export default function Home() {
             }
 
             return () => {
-                videoRefs.current.forEach(video => video?.pauseAsync());
+                videoRefs.current.forEach((video) => video?.pauseAsync());
             };
-        }, [currentIndex]) 
+        }, [currentIndex]),
     );
 
     return (
-        <FlatList
-            data={videoUrls}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => (
-                <TouchableWithoutFeedback onPress={() => handlePress(index)}>
-                    <View style={styles.videoContainer}>
-                        <Video
-                            ref={(ref) => (videoRefs.current[index] = ref)}
-                            style={styles.video}
-                            source={{ uri: item }}
-                            useNativeControls={false}
-                            resizeMode={ResizeMode.COVER}
-                            isLooping
-                        />
-                    </View>
-                </TouchableWithoutFeedback>
-            )}
-            pagingEnabled
-            decelerationRate="fast"
-            snapToInterval={height}
-            viewabilityConfig={viewConfigRef}
-            onViewableItemsChanged={onViewRef.current}
-            showsVerticalScrollIndicator={false}
-        />
+        <View></View>
+        // <FlatList
+        //     data={videoUrls}
+        //     keyExtractor={(item, index) => index.toString()}
+        //     renderItem={({ item, index }) => (
+        //         <TouchableWithoutFeedback onPress={() => handlePress(index)}>
+        //             <View style={styles.videoContainer}>
+        //                 <Video
+        //                     ref={(ref) => (videoRefs.current[index] = ref)}
+        //                     style={styles.video}
+        //                     source={{ uri: item }}
+        //                     useNativeControls={false}
+        //                     resizeMode={ResizeMode.COVER}
+        //                     isLooping
+        //                 />
+        //             </View>
+        //         </TouchableWithoutFeedback>
+        //     )}
+        //     pagingEnabled
+        //     decelerationRate="fast"
+        //     snapToInterval={height}
+        //     viewabilityConfig={viewConfigRef}
+        //     onViewableItemsChanged={onViewRef.current}
+        //     showsVerticalScrollIndicator={false}
+        // />
     );
 }
 
