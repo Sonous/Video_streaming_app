@@ -34,7 +34,7 @@ export default function Input({
             <TextInput
                 value={state}
                 onChangeText={handleSetInput}
-                className={classNames('border-b-[1px] border-[#b6b6b6] h-[50px]', {
+                className={classNames('border-b-[1px] border-[#b6b6b6] h-[55px]', {
                     'border-[1px] rounded-lg p-5': type === 'login',
                 })}
                 secureTextEntry={hidePassword}

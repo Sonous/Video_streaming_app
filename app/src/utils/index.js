@@ -17,8 +17,8 @@ export function maskEmail(email) {
     return maskedLocal + '@' + domain;
 }
 
-export function truncateText(text) {
-    return text.length > 30 ? text.slice(0, 20) + '...' : text;
+export function truncateText(text, size = 30) {
+    return text.length > size ? text.slice(0, size - 10) + '...' : text;
 }
 
 export const validateEmail = (email) => {
@@ -50,4 +50,40 @@ export async function createTokenWithCode(code) {
     });
 
     return response.json();
+}
+
+export function getRoomId(uid1, uid2) {
+    const sortedId = [uid1, uid2].sort();
+
+    return sortedId.join('-');
+}
+
+export function formatTimestamp(timestamp) {
+    // Chuyển đổi Timestamp sang Date
+    const date = timestamp.toDate();
+
+    // Lấy ngày hiện tại
+    const today = new Date();
+
+    // Kiểm tra nếu ngày trùng với ngày hôm nay
+    const isToday =
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+
+    // Định dạng giờ và phút
+    const timeString = `${date.getHours().toString().padStart(2, '0')}:${date
+        .getMinutes()
+        .toString()
+        .padStart(2, '0')}`;
+
+    if (isToday) {
+        return `${timeString} Today`;
+    } else {
+        // Định dạng ngày, tháng, năm nếu không phải ngày hôm nay
+        const dateString = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+            .toString()
+            .padStart(2, '0')}/${date.getFullYear()}`;
+        return `${timeString} ${dateString}`;
+    }
 }

@@ -5,7 +5,9 @@ import Home from '../pages/Home';
 import Upload from '../pages/Upload/Upload';
 import Profile from '../pages/Profile/Profile';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Search from '../pages/Search';
+import Inbox from '../pages/Inbox/Inbox';
 
 const BottomStack = createBottomTabNavigator();
 
@@ -34,6 +36,13 @@ export default function BottomNav() {
             <BottomStack.Screen name="Home" component={Home} />
             <BottomStack.Screen name="Search" component={Search} />
             <BottomStack.Screen name="Upload" component={Upload} />
+            <BottomStack.Screen
+                name="Inbox"
+                component={Inbox}
+                options={{
+                    tabBarIcon: ({ size, color }) => <AntDesign name="message1" size={size} color={color} />,
+                }}
+            />
             <BottomStack.Screen name="Profile" component={Profile} />
         </BottomStack.Navigator>
     );

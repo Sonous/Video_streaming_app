@@ -27,9 +27,9 @@ const settingItems = [
                 title: 'Logout',
                 showArrow: false,
                 nav: 'BottomNav',
-                async onPress(setIsAuth, setUser) {
+                async onPress(setIsAuth, setUser, userId) {
                     try {
-                        await authApi.logout();
+                        await authApi.logout(userId);
 
                         setUser(null);
                         setIsAuth(false);

@@ -76,6 +76,7 @@ export default function Login({ navigation }) {
 
     const handleLoginWithEmailPassword = async () => {
         try {
+            console.log('fsdifj');
             const user = await authApi.login(email, password);
 
             AsyncStorage.setItem('userId', user.userId);

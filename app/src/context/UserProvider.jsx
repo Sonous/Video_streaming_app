@@ -14,9 +14,10 @@ export default function UserProvider({ children }) {
             try {
                 const storedUserId = await AsyncStorage.getItem('userId');
 
-                console.log(storedUserId);
-
                 if (storedUserId) {
+                    await dbApi.updateUserInfo(storedUserId, {
+                        isActive: true,
+                    });
                     const userInfo = await dbApi.getUserData(storedUserId);
 
                     setUser({
@@ -33,7 +34,29 @@ export default function UserProvider({ children }) {
         checkUser();
     }, []);
 
-    // console.log(user);
+    useEffect(() => {
+        const unsubscribe = db
+            .collection('users')
+            .doc(user?.userId)
+            .onSnapshot((snapshot) => {
+                if (snapshot.exists) {
+                    const newUserInfo = {
+                        userId: snapshot.id,
+                        ...snapshot.data(),
+                    };
+                    console.log('jifdsji');
+                    console.log('do work...');
+
+                    setUser(newUserInfo);
+                }
+            });
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
+    console.log(user);
 
     return <UserContext.Provider value={{ user, setUser, isAuth, setIsAuth }}>{children}</UserContext.Provider>;
 }

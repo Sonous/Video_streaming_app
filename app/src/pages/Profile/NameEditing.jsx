@@ -8,7 +8,7 @@ import dbApi from '../../apis/dbApi';
 
 export default function NameEditing({ navigation }) {
     const { user, setUser } = useContext(UserContext);
-    const [nameInput, setNameInput] = useState(user.username);
+    const [nameInput, setNameInput] = useState(user.name);
 
     const [inputLength, setInputLength] = useState(nameInput.length);
 
@@ -23,7 +23,7 @@ export default function NameEditing({ navigation }) {
     const handleSave = async () => {
         try {
             await dbApi.updateUserInfo(user.userId, {
-                username: nameInput,
+                name: nameInput,
             });
             const result = await dbApi.getUserData(user.userId);
 
