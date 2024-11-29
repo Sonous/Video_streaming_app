@@ -76,7 +76,7 @@ export default function Signup({ navigation }) {
                     title={'Sign up'}
                     type={'primary'}
                     onPress={handleSignup}
-                    disabled={!email || !password || !confirmPassword || ErrorEmail || ErrorConfirmPassword || false}
+                    disabled={!email || !password || !confirmPassword || !!ErrorEmail || !!ErrorConfirmPassword}
                 />
 
                 <View className="flex-row justify-center">
