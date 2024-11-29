@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableOpacity } from 'react-native';
@@ -76,7 +76,6 @@ export default function Login({ navigation }) {
 
     const handleLoginWithEmailPassword = async () => {
         try {
-            console.log('fsdifj');
             const user = await authApi.login(email, password);
 
             AsyncStorage.setItem('userId', user.userId);
@@ -85,12 +84,11 @@ export default function Login({ navigation }) {
             setIsAuth(true);
             navigation.popToTop();
         } catch (error) {
-            if (error.code === 'auth/invalid-credential') {
-                setIsError(true);
-                return;
+            if (error.code === 'auth/wrong-password') {
+                Alert.alert('Wrong current password');
+            } else {
+                console.error('Lỗi khi đổi mật khẩu:', error.message);
             }
-
-            console.error(error);
         }
     };
 
@@ -141,7 +139,7 @@ export default function Login({ navigation }) {
                     title={'Log in'}
                     type={'primary'}
                     onPress={handleLoginWithEmailPassword}
-                    disabled={!email || !password || errorEmail || false}
+                    disabled={!email || !password || !!errorEmail}
                 />
 
                 <View className="flex-row justify-center">

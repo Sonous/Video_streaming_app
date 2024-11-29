@@ -3,7 +3,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Setting from '../pages/Setting/Setting';
 import Account from '../pages/Account/Account';
-import AccountInfomation from '../pages/Account/AccountInfomation';
+import ResetEmail from '../pages/Account/ResetEmail';
 import Password from '../pages/Account/Password';
 
 const Stack = createNativeStackNavigator();
@@ -17,7 +17,7 @@ const AccountNav = () => (
         })}
     >
         <AccountStack.Screen name="Account" component={Account} />
-        <AccountStack.Screen name="AccountInformation" component={AccountInfomation} />
+        <AccountStack.Screen name="ResetEmail" component={ResetEmail} />
         <AccountStack.Screen name="Password" component={Password} />
     </AccountStack.Navigator>
 );

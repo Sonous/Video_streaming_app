@@ -1,13 +1,14 @@
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import React, { useState } from 'react';
 import SettingLayout from '../layouts/SettingLayout';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { validateEmail } from '../utils';
+import { auth } from '../../firebase.config';
 
 export default function Forgot({ navigation }) {
     const [email, setEmail] = useState('');
-    const [ErrorEmail, setErrorEmail] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
 
     const handleValidEmail = (input) => {
         if (input && !validateEmail(input)) {
@@ -17,10 +18,19 @@ export default function Forgot({ navigation }) {
         }
     };
 
-    const handleResetPass = () => {
-        // if  {
-        // }
-        console.log('hfisdfi');
+    const handleResetPass = async () => {
+        try {
+            await auth.sendPasswordResetEmail(email);
+
+            Alert.alert('Email sent', 'Please check your email', [
+                {
+                    text: 'Ok',
+                    onPress: () => navigation.navigate('Login'),
+                },
+            ]);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -33,17 +43,14 @@ export default function Forgot({ navigation }) {
                         state={email}
                         setState={setEmail}
                         type={'login'}
-                        onSetInput={handleValidEmail}
+                        onSetInput={(value) => {
+                            handleValidEmail(value);
+                        }}
                         placeholder={'Email address'}
                     />
-                    {ErrorEmail && <Text className="text-red-600">{ErrorEmail}</Text>}
+                    {errorEmail && <Text className="text-red-600">{errorEmail}</Text>}
                 </View>
-                <Button
-                    title={'Reset'}
-                    type={'primary'}
-                    onPress={handleResetPass}
-                    disabled={!email || ErrorEmail || false}
-                />
+                <Button title={'Reset'} type={'primary'} onPress={handleResetPass} disabled={!email || !!errorEmail} />
             </View>
         </SettingLayout>
     );

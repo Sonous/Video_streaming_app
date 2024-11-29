@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { db } from '../../firebase.config';
+import { auth, db } from '../../firebase.config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import dbApi from '../apis/dbApi';
 
@@ -51,12 +51,18 @@ export default function UserProvider({ children }) {
                 }
             });
 
-        return () => {
-            unsubscribe();
-        };
+        return unsubscribe;
     }, []);
 
-    console.log(user);
+    // console.log('fjsdijf');
+
+    // useEffect(() => {
+    //     const unsubscribe = auth.onAuthStateChanged((user) => {
+    //         console.log('fdsuiajfus', user);
+    //     });
+
+    //     return unsubscribe; // Hủy đăng ký khi component unmount
+    // }, []);
 
     return <UserContext.Provider value={{ user, setUser, isAuth, setIsAuth }}>{children}</UserContext.Provider>;
 }

@@ -3,6 +3,7 @@ import React from 'react';
 import SettingBox from './SettingBox';
 import SettingLayout from '../../layouts/SettingLayout';
 import authApi from '../../apis/authApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const settingItems = [
     {
@@ -31,6 +32,7 @@ const settingItems = [
                     try {
                         await authApi.logout(userId);
 
+                        AsyncStorage.removeItem('userId');
                         setUser(null);
                         setIsAuth(false);
                     } catch (error) {
