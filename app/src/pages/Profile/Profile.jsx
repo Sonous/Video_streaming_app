@@ -32,7 +32,7 @@ export default function Profile({ navigation }) {
     const { isAuth, user } = useContext(UserContext);
     const route = useRoute();
 
-    // console.log(user);
+    // console.log(postedVideos);
 
     useEffect(() => {
         if (user || route.params?.personId) {

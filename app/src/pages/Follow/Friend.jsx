@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import UserCard from '../../components/UserCard';
 import { UserContext } from '../../context/UserProvider';
@@ -34,7 +34,7 @@ export default function Friend() {
     }, [user]);
 
     return (
-        <View className="px-5 py-3">
+        <ScrollView className="px-5 py-3">
             <View>
                 {friends.length > 0 ? (
                     <>
@@ -46,6 +46,6 @@ export default function Friend() {
                     <Text className="text-center">Follow more people to make more friends.</Text>
                 )}
             </View>
-        </View>
+        </ScrollView>
     );
 }
