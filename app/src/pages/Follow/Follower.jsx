@@ -7,20 +7,16 @@ import { useRoute } from '@react-navigation/native';
 
 export default function Follower() {
     const [follower, setFollower] = useState([]);
-    const [otherPerson, setOtherPerson] = useState(null);
+    const [person, setPerson] = useState(null);
     const route = useRoute();
 
     const { user } = useContext(UserContext);
 
     useEffect(() => {
         const fetchApi = async () => {
-            let data;
-            if (route.params.personId === user.userId) {
-                data = user;
-            } else {
-                data = await dbApi.getUserData(route.params.personId);
-                setOtherPerson(data);
-            }
+            const data = await dbApi.getUserData(route.params.personId);
+
+            setPerson(data);
 
             const users = await Promise.all(data.followers.map((uid) => dbApi.getUserData(uid)));
 
@@ -36,7 +32,7 @@ export default function Follower() {
                 {follower.length > 0 ? (
                     <>
                         {follower.map((user, index) => (
-                            <UserCard key={index} isFriend otherPerson={otherPerson} {...user} />
+                            <UserCard key={index} isFriend person={person} {...user} />
                         ))}
                     </>
                 ) : (

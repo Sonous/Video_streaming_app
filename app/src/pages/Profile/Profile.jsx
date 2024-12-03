@@ -1,4 +1,4 @@
-import { View, Text, Image, Dimensions } from 'react-native';
+import { View, Text, Image, Dimensions, Alert } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -26,7 +26,7 @@ export default function Profile({ navigation }) {
     const [postedVideos, setPostedVideos] = useState([]);
     const [markedVideos, setMarkedVideos] = useState([]);
 
-    const [otherPerson, setOtherPerson] = useState(null);
+    const [person, setPerson] = useState(null);
     const [relationship, setRelationShip] = useState('stranger');
     const [reload, setReload] = useState(false);
     const { isAuth, user } = useContext(UserContext);
@@ -35,34 +35,31 @@ export default function Profile({ navigation }) {
     // console.log(postedVideos);
 
     useEffect(() => {
-        if (user || route.params?.personId) {
+        if (person) {
             const unsubscribePostedVideo = db
                 .collection('videos')
-                .where('userId', '==', route.params?.personId || user.userId)
+                .where('userId', '==', person?.userId)
                 .onSnapshot((querySnapshot) => {
                     const videos = [];
                     querySnapshot.forEach((doc) => {
-                        videos.push(doc.data());
+                        videos.push({
+                            ...doc.data(),
+                            videoId: doc.id,
+                        });
                     });
                     setPostedVideos(videos);
                 });
 
             const unsubscribeMarkedVideo = db
-                .collection('bookmarks')
-                .where('userId', '==', route.params?.personId || user.userId)
+                .collection('videos')
+                .where('marks', 'array-contains', person?.userId)
                 .onSnapshot((querySnapshot) => {
-                    const videosPendingPromise = [];
-
-                    querySnapshot.forEach((markedVideo) => {
-                        db.collection('videos')
-                            .doc(markedVideo.data().videoId)
-                            .get()
-                            .then((video) => {
-                                videosPendingPromise.push(video.data());
-                            });
-                    });
-
-                    setMarkedVideos(videosPendingPromise);
+                    setMarkedVideos(
+                        querySnapshot.docs.map((doc) => ({
+                            ...doc.data(),
+                            videoId: doc.id,
+                        })),
+                    );
                 });
 
             return () => {
@@ -70,32 +67,40 @@ export default function Profile({ navigation }) {
                 unsubscribeMarkedVideo();
             };
         }
-    }, [user]);
+    }, [person]);
 
     useEffect(() => {
         const fetchApi = async () => {
-            const data = await dbApi.getUserData(route.params?.personId);
+            try {
+                const data = await dbApi.getUserData(route.params?.personId);
 
-            const isStayInFollowers = user.followers.includes(data.userId);
-            const isStayInFollowing = user.following.includes(data.userId);
+                if (user) {
+                    const isStayInFollowers = user.followers.includes(data?.userId);
+                    const isStayInFollowing = user.following.includes(data?.userId);
 
-            if (isStayInFollowers && isStayInFollowing) {
-                setRelationShip('friend');
-            } else if (isStayInFollowers) {
-                setRelationShip('follower');
-            } else if (isStayInFollowing) {
-                setRelationShip('following');
-            } else {
-                setRelationShip('stranger');
+                    if (isStayInFollowers && isStayInFollowing) {
+                        setRelationShip('friend');
+                    } else if (isStayInFollowers) {
+                        setRelationShip('follower');
+                    } else if (isStayInFollowing) {
+                        setRelationShip('following');
+                    } else {
+                        setRelationShip('stranger');
+                    }
+                }
+
+                setPerson(data);
+            } catch (error) {
+                console.error(error);
             }
-
-            setOtherPerson(data);
         };
 
         if (route.params?.personId) {
             fetchApi();
+        } else {
+            setPerson(user);
         }
-    }, [reload]);
+    }, [reload, user]);
 
     const handleSwitchSubPage = (subPage) => {
         setCurrentSubPage(subPage);
@@ -108,99 +113,99 @@ export default function Profile({ navigation }) {
     };
 
     const handleFollow = async () => {
-        await dbApi.updateUserInfo(otherPerson.userId, {
-            followers: [...otherPerson.followers, user.userId],
-        });
-        await dbApi.updateUserInfo(user.userId, {
-            following: [...user.following, otherPerson.userId],
-        });
+        if (user) {
+            await dbApi.updateUserInfo(person?.userId, {
+                followers: [...person.followers, user?.userId],
+            });
+            await dbApi.updateUserInfo(user?.userId, {
+                following: [...user.following, person?.userId],
+            });
 
-        setReload(!reload);
+            setReload(!reload);
+        } else {
+            Alert.alert('Please log into an existing account!');
+        }
     };
 
     const handleRemoveFollow = async () => {
-        await dbApi.updateUserInfo(otherPerson.userId, {
-            followers: otherPerson.followers.filter((follower) => follower !== user.userId),
+        await dbApi.updateUserInfo(person?.userId, {
+            followers: person.followers.filter((follower) => follower !== user?.userId),
         });
-        await dbApi.updateUserInfo(user.userId, {
-            following: user.following.filter((following) => following !== otherPerson.userId),
+        await dbApi.updateUserInfo(user?.userId, {
+            following: user.following.filter((following) => following !== person?.userId),
         });
 
         setReload(!reload);
     };
 
     const handleOpenMessage = () => {
-        navigation.navigate('ChatRoom', {
-            friendId: otherPerson.userId,
-        });
+        if (user) {
+            navigation.navigate('ChatRoom', {
+                friendId: person?.userId,
+            });
+        } else {
+            Alert.alert('Please log into an existing account!');
+        }
     };
 
-    console.log(relationship);
-    console.log(user);
+    // console.log(relationship);
+    // console.log(user);
 
     return (
         <>
-            {isAuth && user ? (
+            {person && (
                 <ProfileLayout
-                    type={otherPerson ? 'other' : 'personal'}
-                    title={otherPerson?.name}
+                    type={route.params?.personId ? 'other' : 'personal'}
+                    title={person?.name}
                     navigation={navigation}
                 >
                     <View className="p-2">
                         <View className="items-center gap-3">
                             <View className="items-center">
-                                {otherPerson ? (
-                                    <Image
-                                        source={
-                                            otherPerson.profilePicture
-                                                ? { uri: otherPerson.profilePicture }
-                                                : require('../../assets/images/avatar_placeholder.png')
-                                        }
-                                        className="w-24 h-24 rounded-full"
-                                    />
-                                ) : (
-                                    <Image
-                                        source={
-                                            user.profilePicture
-                                                ? { uri: user.profilePicture }
-                                                : require('../../assets/images/avatar_placeholder.png')
-                                        }
-                                        className="w-24 h-24 rounded-full"
-                                    />
-                                )}
+                                <Image
+                                    source={
+                                        person.profilePicture
+                                            ? { uri: person.profilePicture }
+                                            : require('../../assets/images/avatar_placeholder.png')
+                                    }
+                                    className="w-24 h-24 rounded-full"
+                                />
 
-                                <Text className="text-lg font-semibold text-center">
-                                    @{otherPerson ? otherPerson.username : user.username}
-                                </Text>
+                                <Text className="text-lg font-semibold text-center">@{person.username}</Text>
                             </View>
                             <View className="flex-row">
                                 <QuantityBox
-                                    quantity={otherPerson ? otherPerson?.following.length : user.following.length}
+                                    quantity={person?.following.length}
                                     title={'Following'}
-                                    onPress={() =>
-                                        handleNav('FollowStack', {
-                                            page: 'Following',
-                                            personId: otherPerson ? otherPerson.userId : user.userId,
-                                        })
-                                    }
+                                    onPress={() => {
+                                        if (user) {
+                                            handleNav('FollowStack', {
+                                                page: 'Following',
+                                                personId: person?.userId,
+                                            });
+                                        } else {
+                                            Alert.alert('Please log into an existing account!');
+                                        }
+                                    }}
                                 />
                                 <QuantityBox
-                                    quantity={otherPerson ? otherPerson?.followers.length : user.followers.length}
+                                    quantity={person?.followers.length}
                                     title={'Follower'}
-                                    onPress={() =>
-                                        handleNav('FollowStack', {
-                                            page: 'Follower',
-                                            personId: otherPerson ? otherPerson.userId : user.userId,
-                                        })
-                                    }
+                                    onPress={() => {
+                                        if (user) {
+                                            handleNav('FollowStack', {
+                                                page: 'Follower',
+                                                personId: person?.userId,
+                                            });
+                                        } else {
+                                            Alert.alert('Please log into an existing account!');
+                                        }
+                                    }}
                                 />
-                                <QuantityBox
-                                    quantity={otherPerson ? otherPerson?.likesCount : user.likesCount}
-                                    title={'Likes'}
-                                />
+                                <QuantityBox quantity={person?.likesCount} title={'Likes'} />
                             </View>
                             <View className="flex-row gap-2">
-                                {otherPerson ? (
+                                {person?.userId !== user?.userId ? (
                                     <>
                                         {!['friend', 'following'].includes(relationship) && (
                                             <Button
@@ -247,7 +252,7 @@ export default function Profile({ navigation }) {
                                     </>
                                 )}
                             </View>
-                            {user.bio && <Text>{user.bio}</Text>}
+                            {person.bio && <Text>{person.bio}</Text>}
                         </View>
                         <View className="flex-row mt-5 justify-between fixed">
                             <View
@@ -284,6 +289,12 @@ export default function Profile({ navigation }) {
                                                 key={index}
                                                 thumbnail={video.thumbnailUrl}
                                                 viewerQuantity={formatViews(video.viewersCount)}
+                                                onPress={() =>
+                                                    handleNav('ShowVideo', {
+                                                        videos: postedVideos,
+                                                        initVideoId: video.videoId,
+                                                    })
+                                                }
                                             />
                                         );
                                     })}
@@ -298,6 +309,12 @@ export default function Profile({ navigation }) {
                                                 key={index}
                                                 thumbnail={video.thumbnailUrl}
                                                 viewerQuantity={formatViews(video.viewersCount)}
+                                                onPress={() =>
+                                                    handleNav('ShowVideo', {
+                                                        videos: markedVideos,
+                                                        initVideoId: video.videoId,
+                                                    })
+                                                }
                                             />
                                         );
                                     })}
@@ -305,7 +322,9 @@ export default function Profile({ navigation }) {
                         )}
                     </View>
                 </ProfileLayout>
-            ) : (
+            )}
+
+            {!route.params?.personId && !person && (
                 <View
                     style={{
                         height: height,

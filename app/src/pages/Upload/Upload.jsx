@@ -33,7 +33,7 @@ export default function Upload({ navigation }) {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 allowsEditing: true,
-                mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+                mediaTypes: ['videos'],
                 quality: 1,
             });
 

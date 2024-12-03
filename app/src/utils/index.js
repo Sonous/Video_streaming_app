@@ -80,10 +80,16 @@ export function formatTimestamp(timestamp) {
     if (isToday) {
         return `${timeString} Today`;
     } else {
-        // Định dạng ngày, tháng, năm nếu không phải ngày hôm nay
-        const dateString = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
-            .toString()
-            .padStart(2, '0')}/${date.getFullYear()}`;
+        // Kiểm tra nếu năm của timestamp là năm hiện tại
+        const isSameYear = date.getFullYear() === today.getFullYear();
+
+        // Định dạng ngày và tháng nếu cùng năm, ngược lại định dạng cả ngày/tháng/năm
+        const dateString = isSameYear
+            ? `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`
+            : `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+                  .toString()
+                  .padStart(2, '0')}/${date.getFullYear()}`;
+
         return `${timeString} ${dateString}`;
     }
 }
