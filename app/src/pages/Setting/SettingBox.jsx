@@ -8,10 +8,17 @@ export default function SettingBox({ label, data, navigation }) {
 
     const handleEvent = (item) => {
         if (item.nav) {
+            if (item.title === 'Logout') {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'BottomNav' }],
+                });
+                return;
+            }
+
             navigation.navigate(`${item.nav}`);
             return;
         }
-        console.log('jfodko');
     };
 
     return (

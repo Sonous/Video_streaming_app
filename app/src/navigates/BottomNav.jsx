@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from '../pages/Home';
+import Home from '../pages/Home/Home';
 import Upload from '../pages/Upload/Upload';
 import Profile from '../pages/Profile/Profile';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,6 +30,9 @@ export default function BottomNav() {
                     }
 
                     return <MaterialCommunityIcons name={iconName} color={color} size={size} />;
+                },
+                tabBarStyle: {
+                    backgroundColor: route.name === 'Home' ? 'black' : 'white',
                 },
             })}
         >

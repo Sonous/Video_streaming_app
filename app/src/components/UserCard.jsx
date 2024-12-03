@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Button from './Button';
 import { formatViews, getRoomId } from '../utils';
@@ -25,24 +25,19 @@ export default function UserCard({
     const navigation = useNavigation();
 
     useEffect(() => {
-        let data;
-        if (otherPerson) {
-            data = otherPerson;
-        } else {
-            data = user;
-        }
+        if (user) {
+            const isStayInFollowers = user.followers.includes(userId);
+            const isStayInFollowing = user.following.includes(userId);
 
-        const isStayInFollowers = data.followers.includes(userId);
-        const isStayInFollowing = data.following.includes(userId);
-
-        if (isStayInFollowers && isStayInFollowing) {
-            setBtnStatus('Message');
-        } else if (isStayInFollowers) {
-            setBtnStatus('Follow back');
-        } else if (isStayInFollowing) {
-            setBtnStatus('Following');
-        } else {
-            setBtnStatus('Follow');
+            if (isStayInFollowers && isStayInFollowing) {
+                setBtnStatus('Message');
+            } else if (isStayInFollowers) {
+                setBtnStatus('Follow back');
+            } else if (isStayInFollowing) {
+                setBtnStatus('Following');
+            } else {
+                setBtnStatus('Follow');
+            }
         }
     }, [btnStatus, user]);
 
@@ -71,16 +66,23 @@ export default function UserCard({
     };
 
     const handleNavToProfile = () => {
-        navigation.navigate('Profile', {
+        navigation.navigate('OtherProfile', {
             personId: userId,
         });
     };
 
+    console.log(user.userId !== userId);
+
     return (
-        <TouchableOpacity className="flex-row gap-3 items-center " activeOpacity={0.5} onPress={handleNavToProfile}>
+        <TouchableOpacity
+            className="flex-row gap-3 items-center "
+            // style={{ width: Dimensions.get('window').width }}
+            activeOpacity={0.5}
+            onPress={handleNavToProfile}
+        >
             <Image source={{ uri: profilePicture }} className="w-[70px] h-[70px] rounded-full" />
 
-            <View className="gap-3 w-[290px] flex-row">
+            <View className="gap-3 w-[290px] flex-row  flex-1">
                 <View className="flex-1">
                     <Text className="text-lg font-medium">{name}</Text>
                     <Text className="text-neutral-500">{suggestedAccount ? 'Follows you' : username}</Text>
@@ -88,6 +90,9 @@ export default function UserCard({
                         <Text className="text-neutral-500">{formatViews(followers.length)} followers</Text>
                     )}
                 </View>
+            </View>
+
+            {user.userId !== userId && (
                 <View className="items-center justify-center">
                     <Button
                         title={btnStatus}
@@ -103,7 +108,7 @@ export default function UserCard({
                         }}
                     />
                 </View>
-            </View>
+            )}
         </TouchableOpacity>
     );
 }

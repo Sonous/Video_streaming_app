@@ -7,28 +7,26 @@ import { useRoute } from '@react-navigation/native';
 
 export default function Following() {
     const [following, setFollowing] = useState([]);
-    const [otherPerson, setOtherPerson] = useState(null);
+    const [person, setPerson] = useState(null);
     const route = useRoute();
 
     const { user } = useContext(UserContext);
 
     useEffect(() => {
         const fetchApi = async () => {
-            let data;
-            if (route.params.personId === user.userId) {
-                data = user;
-            } else {
-                data = await dbApi.getUserData(route.params.personId);
-                setOtherPerson(data);
-            }
+            const data = await dbApi.getUserData(route.params.personId);
+
+            setPerson(data);
 
             const users = await Promise.all(data.following.map((uid) => dbApi.getUserData(uid)));
 
             setFollowing(users);
         };
 
-        fetchApi();
-    }, [user]);
+        if (route.params?.personId) {
+            fetchApi();
+        }
+    }, []);
 
     return (
         <View className="px-5 py-3">
@@ -36,7 +34,7 @@ export default function Following() {
                 {following.length > 0 ? (
                     <>
                         {following.map((user, index) => (
-                            <UserCard key={index} isFriend otherPerson={otherPerson} {...user} />
+                            <UserCard key={index} isFriend person={person} {...user} />
                         ))}
                     </>
                 ) : (
