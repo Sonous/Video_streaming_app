@@ -42,11 +42,11 @@ export default function Search({ navigation }) {
               <TouchableOpacity
                 style={styles.result}
                 key={video.id}
-                onPress={() => navigation.navigate("VideoPlayer", { videoUrl: video.url })}
+                onPress={() => navigation.navigate("VideoPlayer", { videoUrl: video.videoUrl })}
               >
                 <Video
                   style={styles.video}
-                  source={{ uri: video.url }}
+                  source={{ uri: video.videoUrl }}
                   resizeMode={ResizeMode.COVER}
                 />
                 <View style={styles.infoContainer}>
