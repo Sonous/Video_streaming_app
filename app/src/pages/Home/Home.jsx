@@ -3,11 +3,12 @@ import React, { Suspense, useContext, useEffect, useState } from 'react';
 import dbApi from '../../apis/dbApi';
 import VideoFlatList from '../../components/VideoFlatList';
 import Video from '../../components/Video';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useNavigationState } from '@react-navigation/native';
 
 export default function Home() {
     const [videos, setVideos] = useState([]);
     const [reload, setReload] = useState(false);
+    const [isEnabledHome, setIsEnabledHome] = useState(false);
     const navigation = useNavigation();
 
     const fetchVideos = async () => {
@@ -37,6 +38,7 @@ export default function Home() {
                     }
                 });
             });
+            setIsEnabledHome(false);
         });
 
         const unsubscribeFocus = navigation.addListener('focus', () => {
@@ -49,6 +51,7 @@ export default function Home() {
                     }
                 });
             });
+            setIsEnabledHome(true);
         });
 
         return () => {
@@ -57,10 +60,18 @@ export default function Home() {
         };
     }, []);
 
+    // console.log(isEnabledHome);
     return (
         <View className="flex-1 bg-black">
             <StatusBar barStyle={'light-content'} backgroundColor={'black'} />
-            {videos.length > 0 && <VideoFlatList videos={videos} setVideos={setVideos} setReload={setReload} />}
+            {videos.length > 0 && (
+                <VideoFlatList
+                    videos={videos}
+                    setVideos={setVideos}
+                    setReload={setReload}
+                    isEnabledHome={isEnabledHome}
+                />
+            )}
         </View>
     );
 }

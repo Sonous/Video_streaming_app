@@ -4,7 +4,14 @@ import Video from './Video';
 
 const { height } = Dimensions.get('window');
 
-export default function VideoFlatList({ videos = [], setVideos, setReload, isBottomTab = true, flatListRef }) {
+export default function VideoFlatList({
+    videos = [],
+    setVideos,
+    setReload,
+    isBottomTab = true,
+    flatListRef,
+    isEnabledHome,
+}) {
     const [isEnableFlatList, setEnableFlatList] = useState(true);
     const [isCommentModalVisible, setCommentModalVisible] = useState(false);
 
@@ -14,7 +21,9 @@ export default function VideoFlatList({ videos = [], setVideos, setReload, isBot
 
     const viewabilityConfigCallback = useCallback(
         ({ viewableItems }) => {
-            if (viewableItems.length > 0 && !isCommentModalVisible) {
+            if (viewableItems.length > 0 && !isCommentModalVisible && isEnabledHome) {
+                console.log('isEnabledHome: ', isEnabledHome);
+                console.log('dk', viewableItems.length > 0 && !isCommentModalVisible && isEnabledHome);
                 setVideos((prev) =>
                     prev.map((video) => {
                         if (video.videoId !== viewableItems[0].item.videoId) {
@@ -32,7 +41,7 @@ export default function VideoFlatList({ videos = [], setVideos, setReload, isBot
                 );
             }
         },
-        [isCommentModalVisible],
+        [isCommentModalVisible, isEnabledHome],
     );
 
     return (
