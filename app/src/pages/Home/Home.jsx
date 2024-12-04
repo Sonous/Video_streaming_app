@@ -1,7 +1,7 @@
 import { View, Text, StatusBar } from 'react-native';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import dbApi from '../../apis/dbApi';
-import VideoList from '../../components/VideoList';
+import VideoFlatList from '../../components/VideoFlatList';
 import Video from '../../components/Video';
 import { useNavigation } from '@react-navigation/native';
 
@@ -57,12 +57,10 @@ export default function Home() {
         };
     }, []);
 
-    // console.log(videos);
-
     return (
         <View className="flex-1 bg-black">
             <StatusBar barStyle={'light-content'} backgroundColor={'black'} />
-            {videos.length > 0 && <VideoList videos={videos} setVideos={setVideos} setReload={setReload} />}
+            {videos.length > 0 && <VideoFlatList videos={videos} setVideos={setVideos} setReload={setReload} />}
         </View>
     );
 }

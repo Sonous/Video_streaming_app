@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import VideoList from '../../components/VideoList';
+import VideoFlatList from '../../components/VideoFlatList';
 import dbApi from '../../apis/dbApi';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -51,7 +51,7 @@ export default function ShowVideo() {
             <View className="absolute top-0 py-3 px-5 z-50">
                 <AntDesign name="arrowleft" size={24} color={'#fff'} onPress={() => navigation.goBack()} />
             </View>
-            <VideoList
+            <VideoFlatList
                 videos={videos}
                 setVideos={setVideos}
                 initVideoIdId={initVideoId}

@@ -32,7 +32,6 @@ export default function Comment({ comment, commentInputRef, commentInputValue, w
 
     useEffect(() => {
         const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-            console.log(commentInputValue);
             if (!commentInputValue) {
                 setReplyCommentId(null);
                 commentInputRef.current?.blur();
@@ -53,11 +52,6 @@ export default function Comment({ comment, commentInputRef, commentInputValue, w
             setVideos((prev) => {
                 return prev.map((video) => {
                     if (video.videoId === comment.videoId) {
-                        console.log('video.comments: ', video.comments);
-                        console.log(
-                            'new comments: ',
-                            video.comments.filter((item) => item.commentId !== comment.commentId),
-                        );
                         return {
                             ...video,
                             comments: video.comments.filter((item) => item.commentId !== comment.commentId),
@@ -153,14 +147,14 @@ export default function Comment({ comment, commentInputRef, commentInputValue, w
                 <View className="flex-1 gap-2">
                     <View>
                         <View className="flex-row gap-1 items-center">
-                            <Text className="font-medium text-[#818181] border-2 border-transparent">
+                            <Text className="font-medium text-sm text-[#818181] border-2 border-transparent">
                                 {comment.commentOwner.name}
                             </Text>
                             {comment.repliedCommentId &&
                                 comment.parentCommentId !== comment.repliedCommentId.commentId && (
                                     <View className="flex-row items-center gap-2">
-                                        <AntDesign name="caretright" size={10} color={'#818181'} />
-                                        <Text className="font-medium text-[#818181]">
+                                        <AntDesign name="caretright" size={7} color={'#818181'} />
+                                        <Text className="font-medium text-[#818181] text-sm">
                                             {comment.repliedCommentId.name}
                                         </Text>
                                     </View>

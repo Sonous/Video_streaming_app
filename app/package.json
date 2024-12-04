@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
+    "@gorhom/bottom-sheet": "^5",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/bottom-tabs": "^7.0.3",
     "@react-navigation/material-top-tabs": "^7.0.3",
@@ -28,6 +29,7 @@
     "expo-video-thumbnails": "~9.0.2",
     "expo-web-browser": "~14.0.1",
     "firebase": "^10.14.1",
+    "lodash": "^4.17.21",
     "lottie-react-native": "7.1.0",
     "nativewind": "^4.1.21",
     "react": "18.3.1",
@@ -36,8 +38,7 @@
     "react-native-gesture-handler": "~2.20.2",
     "react-native-reanimated": "~3.16.1",
     "react-native-vector-icons": "^10.2.0",
-    "react-native-webview": "13.12.2",
-    "@gorhom/bottom-sheet": "^5"
+    "react-native-webview": "13.12.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

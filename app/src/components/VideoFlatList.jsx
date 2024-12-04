@@ -1,18 +1,10 @@
-import { View, Text, FlatList, Dimensions, Keyboard } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, FlatList, Dimensions } from 'react-native';
+import React, { useCallback, useState } from 'react';
 import Video from './Video';
-import { useBottomSheet, useBottomSheetModal } from '@gorhom/bottom-sheet';
 
 const { height } = Dimensions.get('window');
 
-export default function VideoList({
-    videos = [],
-    setVideos,
-    setReload,
-    initVideoId = null,
-    isBottomTab = true,
-    flatListRef,
-}) {
+export default function VideoFlatList({ videos = [], setVideos, setReload, isBottomTab = true, flatListRef }) {
     const [isEnableFlatList, setEnableFlatList] = useState(true);
     const [isCommentModalVisible, setCommentModalVisible] = useState(false);
 

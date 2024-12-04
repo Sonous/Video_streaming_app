@@ -90,7 +90,6 @@ export default function ChatRoom({ route }) {
     }, []);
 
     const scrollToBottom = () => {
-        console.log('jfidji');
         scrollRef.current?.scrollToEnd({ animated: false });
     };
 

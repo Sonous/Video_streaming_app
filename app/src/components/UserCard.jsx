@@ -71,8 +71,6 @@ export default function UserCard({
         });
     };
 
-    console.log(user.userId !== userId);
-
     return (
         <TouchableOpacity
             className="flex-row gap-3 items-center "
