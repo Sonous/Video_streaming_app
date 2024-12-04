@@ -1,19 +1,19 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FlatList, View, Text, StyleSheet, Dimensions, TouchableWithoutFeedback, TouchableOpacity, TextInput, Modal, Button } from "react-native";
 import { Video, ResizeMode } from "expo-av";
-import { db } from "../../firebase.config"; // Đảm bảo bạn đã cấu hình Firebase
+import { db } from "../../firebase.config"; 
 
 const { height } = Dimensions.get("window");
 
 export default function VideoList({ videoData }) {
   const videoRefs = useRef([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [likes, setLikes] = useState(new Array(videoData.length).fill(false)); // Lưu trạng thái like cho mỗi video
-  const [updatedVideoData, setUpdatedVideoData] = useState(videoData); // Dữ liệu video đã được cập nhật
-  const [comments, setComments] = useState(new Array(videoData.length).fill([])); // Dữ liệu comment cho mỗi video
-  const [commentText, setCommentText] = useState(""); // Nội dung comment
-  const [showModal, setShowModal] = useState(false); // Modal hiển thị form nhập comment
-  const [selectedVideoIndex, setSelectedVideoIndex] = useState(null); // Video đang được chọn để comment
+  const [likes, setLikes] = useState(new Array(videoData.length).fill(false)); 
+  const [updatedVideoData, setUpdatedVideoData] = useState(videoData); 
+  const [comments, setComments] = useState(new Array(videoData.length).fill([])); 
+  const [commentText, setCommentText] = useState(""); 
+  const [showModal, setShowModal] = useState(false); 
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(null); 
 
   useEffect(() => {
     setUpdatedVideoData(videoData);
@@ -32,14 +32,12 @@ export default function VideoList({ videoData }) {
   };
 
   const onViewableItemsChanged = ({ viewableItems }) => {
-    // Dừng video đang chạy
     videoRefs.current.forEach((video, index) => {
       if (index !== viewableItems[0]?.index && video) {
         video.pauseAsync();
       }
     });
 
-    // Phát video hiện tại
     if (viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index);
       videoRefs.current[viewableItems[0].index]?.playAsync();
@@ -49,23 +47,20 @@ export default function VideoList({ videoData }) {
   const viewabilityConfig = { viewAreaCoveragePercentThreshold: 80 };
   const viewabilityConfigCallback = useRef(onViewableItemsChanged);
 
-  // Toggle like
   const toggleLike = async (index) => {
     const updatedLikes = [...likes];
     const currentLikeStatus = updatedLikes[index];
-    updatedLikes[index] = !currentLikeStatus; // Chuyển đổi trạng thái like
+    updatedLikes[index] = !currentLikeStatus; 
 
-    // Cập nhật trạng thái like trong Firestore
-    const videoId = updatedVideoData[index].id; // Lấy id video
+    const videoId = updatedVideoData[index].id; 
     const videoRef = db.collection("videos").doc(videoId);
     const currentLikesCount = updatedVideoData[index].likesCount || 0;
     
     try {
       await videoRef.update({
-        likesCount: currentLikeStatus ? currentLikesCount - 1 : currentLikesCount + 1, // Tăng hoặc giảm số lượt thích
+        likesCount: currentLikeStatus ? currentLikesCount - 1 : currentLikesCount + 1, 
       });
 
-      // Cập nhật số lượt thích trên giao diện
       const updatedVideoDataCopy = [...updatedVideoData];
       updatedVideoDataCopy[index].likesCount = currentLikeStatus ? currentLikesCount - 1 : currentLikesCount + 1;
       setUpdatedVideoData(updatedVideoDataCopy);
@@ -73,21 +68,18 @@ export default function VideoList({ videoData }) {
       console.error("Error updating likes in Firestore:", error);
     }
 
-    // Cập nhật trạng thái like của video
     setLikes(updatedLikes);
   };
 
-  // Thêm comment vào video
   const handleCommentSubmit = async () => {
     if (commentText.trim() === "") return;
 
     const newComment = {
       text: commentText,
-      userName: `User ${selectedVideoIndex + 1}`, // Giả sử tên người dùng
+      userName: `User ${selectedVideoIndex + 1}`, 
       timestamp: new Date(),
     };
 
-    // Lưu comment vào Firestore
     const videoId = updatedVideoData[selectedVideoIndex].id;
     const videoRef = db.collection("videos").doc(videoId);
 
@@ -96,17 +88,14 @@ export default function VideoList({ videoData }) {
         comments: [...updatedVideoData[selectedVideoIndex].comments, newComment],
       });
 
-      // Cập nhật lại danh sách comment trong state
       const updatedComments = [...comments];
       updatedComments[selectedVideoIndex] = [...updatedComments[selectedVideoIndex], newComment];
       setComments(updatedComments);
 
-      // Cập nhật số lượng comment trong Firestore
       await videoRef.update({
         commentsCount: updatedComments[selectedVideoIndex].length,
       });
 
-      // Đóng modal và reset comment
       setShowModal(false);
       setCommentText("");
     } catch (error) {
