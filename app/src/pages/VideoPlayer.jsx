@@ -15,9 +15,11 @@ export default function VideoPlayer({ route, navigation }) {
         resizeMode={ResizeMode.CONTAIN}
         isLooping
         shouldPlay
+        useNativeControls
+        onError={(error) => console.log("Video Error:", error)}
       />
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>{"<--"}</Text>
+        <Text style={styles.backText}>{"<--"}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -27,6 +29,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
   },
   video: {
     width: width,
@@ -37,11 +41,23 @@ const styles = StyleSheet.create({
     top: 40,
     left: 20,
     backgroundColor: "rgba(0,0,0,0.5)",
-    padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
+    padding: 8,
   },
-  backButtonText: {
+  backText: {
     color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 18,
+    marginBottom: 16,
   },
 });
