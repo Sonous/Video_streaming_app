@@ -8,7 +8,6 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Suspense } from 'react';
 
 export default function App() {
-    const Stack = createStackNavigator();
     return (
         <UserProvider>
             <GestureHandlerRootView>
