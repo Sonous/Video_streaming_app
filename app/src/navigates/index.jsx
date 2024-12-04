@@ -15,6 +15,7 @@ import SettingLayout from '../layouts/SettingLayout';
 import ChatRoom from '../pages/ChatRoom/ChatRoom';
 import Profile from '../pages/Profile/Profile';
 import FollowStack from './FollowStack';
+import VideoPlayer from '../pages/VideoPlayer';
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +55,7 @@ export default function Navigator() {
                 <Stack.Screen name="Signup" component={Signup} />
                 <Stack.Screen name="Forgot" component={Forgot} />
                 <Stack.Screen name="Preview" component={Preview} />
+                <Stack.Screen name="VideoPlayer" component={VideoPlayer} />
             </Stack.Navigator>
         </NavigationContainer>
     );
