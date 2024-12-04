@@ -2,7 +2,6 @@ import { View, Text, Alert } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableOpacity } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 
@@ -55,8 +54,6 @@ export default function Login({ navigation }) {
 
                 const user = await authApi.loginWithGithubAccount(access_token);
 
-                AsyncStorage.setItem('userId', user.userId);
-
                 setUser(user);
                 setIsAuth(true);
                 navigation.popToTop();
@@ -77,8 +74,6 @@ export default function Login({ navigation }) {
     const handleLoginWithEmailPassword = async () => {
         try {
             const user = await authApi.login(email, password);
-
-            AsyncStorage.setItem('userId', user.userId);
 
             setUser(user);
             setIsAuth(true);

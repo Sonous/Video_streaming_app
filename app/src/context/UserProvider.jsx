@@ -1,7 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { auth, db } from '../../firebase.config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import dbApi from '../apis/dbApi';
 
 export const UserContext = createContext();
 
@@ -9,61 +7,42 @@ export default function UserProvider({ children }) {
     const [user, setUser] = useState(null);
     const [isAuth, setIsAuth] = useState(false);
     const [replyCommentId, setReplyCommentId] = useState(null);
+    const [uid, setUid] = useState(null);
 
     useEffect(() => {
-        const checkUser = async () => {
-            try {
-                const storedUserId = await AsyncStorage.getItem('userId');
+        if (uid) {
+            const unsubscribe = db
+                .collection('users')
+                .doc(uid)
+                .onSnapshot((snapshot) => {
+                    if (snapshot.exists) {
+                        const newUserInfo = {
+                            userId: snapshot.id,
+                            ...snapshot.data(),
+                        };
+                        console.log('do work...');
 
-                if (storedUserId) {
-                    await dbApi.updateUserInfo(storedUserId, {
-                        isActive: true,
-                    });
-                    const userInfo = await dbApi.getUserData(storedUserId);
+                        setUser(newUserInfo);
+                    }
+                });
 
-                    setUser({
-                        userId: storedUserId,
-                        ...userInfo,
-                    });
-                    setIsAuth(true);
-                }
-            } catch (error) {
-                console.error(error);
+            return unsubscribe;
+        }
+    }, [uid]);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((credential) => {
+            if (credential) {
+                setUid(credential.uid);
+                setIsAuth(true);
+            } else {
+                setUid(null);
+                setIsAuth(false);
             }
-        };
+        });
 
-        checkUser();
+        return unsubscribe; // Hủy đăng ký khi component unmount
     }, []);
-
-    useEffect(() => {
-        const unsubscribe = db
-            .collection('users')
-            .doc(user?.userId)
-            .onSnapshot((snapshot) => {
-                if (snapshot.exists) {
-                    const newUserInfo = {
-                        userId: snapshot.id,
-                        ...snapshot.data(),
-                    };
-                    console.log('jifdsji');
-                    console.log('do work...');
-
-                    setUser(newUserInfo);
-                }
-            });
-
-        return unsubscribe;
-    }, []);
-
-    // console.log('fjsdijf');
-
-    // useEffect(() => {
-    //     const unsubscribe = auth.onAuthStateChanged((user) => {
-    //         console.log('fdsuiajfus', user);
-    //     });
-
-    //     return unsubscribe; // Hủy đăng ký khi component unmount
-    // }, []);
 
     return (
         <UserContext.Provider value={{ user, setUser, isAuth, setIsAuth, replyCommentId, setReplyCommentId }}>
