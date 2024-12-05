@@ -25,6 +25,8 @@ function ExtendComment({ item, subCommentIds, commentVideoHandler, commentInputR
         } catch (error) {
             console.log('handle show replies error: ', error);
         }
+        console.log('fjsadijf');
+
         if (hideSubComment) setShowSubComments(!showSubComments);
     };
 
@@ -70,7 +72,13 @@ function ExtendComment({ item, subCommentIds, commentVideoHandler, commentInputR
             {subCommentIds.length > 0 && (
                 <View className="flex-row gap-2 pl-[45px] items-center">
                     <View className="w-[40px] h-1 border-b-[1px] border-[#818181]" />
-                    <TouchableOpacity activeOpacity={0.5} className="flex-row items-center" onPress={handleShowReplies}>
+                    <TouchableOpacity
+                        activeOpacity={0.5}
+                        className="flex-row items-center"
+                        onPress={() => {
+                            handleShowReplies(true);
+                        }}
+                    >
                         <Text className="text-[#818181] text-sm">
                             {!showSubComments ? `Show ${subCommentIds.length} replies` : 'Hide replies'}{' '}
                         </Text>

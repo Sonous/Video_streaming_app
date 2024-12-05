@@ -5,34 +5,34 @@ import classNames from 'classnames';
 
 export default function SettingLayout({ children, title, navigation, className, onPress }) {
     return (
-        // <ScrollView>
-        <View>
-            <View
-                className={classNames(className, {
-                    'flex-row items-center py-5 px-3': title,
-                })}
-            >
+        <ScrollView>
+            <View>
                 <View
-                    className={classNames('py-5 px-3', {
-                        'absolute z-10 ': title,
+                    className={classNames(className, {
+                        'flex-row items-center py-5 px-3': title,
                     })}
-                    onTouchStart={() => {
-                        if (typeof onPress === 'function') onPress();
-                        navigation.goBack();
-                    }}
                 >
-                    <MaterialCommunityIcons name="arrow-left" size={30} />
+                    <View
+                        className={classNames('py-5 px-3', {
+                            'absolute z-10 ': title,
+                        })}
+                        onTouchStart={() => {
+                            if (typeof onPress === 'function') onPress();
+                            navigation.goBack();
+                        }}
+                    >
+                        <MaterialCommunityIcons name="arrow-left" size={30} />
+                    </View>
+                    <Text
+                        className={classNames('text-4xl font-bold ml-7', {
+                            'text-center align-middle flex-1 !ml-0 !text-lg ': title,
+                        })}
+                    >
+                        {title ? `${title}` : 'Setting'}
+                    </Text>
                 </View>
-                <Text
-                    className={classNames('text-4xl font-bold ml-7', {
-                        'text-center align-middle flex-1 !ml-0 !text-lg ': title,
-                    })}
-                >
-                    {title ? `${title}` : 'Setting'}
-                </Text>
+                {children}
             </View>
-            {children}
-        </View>
-        // </ScrollView>
+        </ScrollView>
     );
 }

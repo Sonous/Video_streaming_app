@@ -5,7 +5,7 @@ const { height } = Dimensions.get('window');
 
 export default function Loader() {
     return (
-        <View className="absolute bg-[#00000080] w-full" style={{ height: height }}>
+        <View className="absolute z-50 bg-[#00000080] w-full" style={{ height: height }}>
             <ActivityIndicator size={'large'} className="items-center flex-1" />
         </View>
     );

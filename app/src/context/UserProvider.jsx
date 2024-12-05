@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { auth, db } from '../../firebase.config';
+import Loader from '../components/Loader';
 
 export const UserContext = createContext();
 
@@ -8,6 +9,7 @@ export default function UserProvider({ children }) {
     const [isAuth, setIsAuth] = useState(false);
     const [replyCommentId, setReplyCommentId] = useState(null);
     const [uid, setUid] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (uid) {
@@ -45,8 +47,11 @@ export default function UserProvider({ children }) {
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, isAuth, setIsAuth, replyCommentId, setReplyCommentId }}>
+        <UserContext.Provider
+            value={{ user, setUser, isAuth, setIsAuth, replyCommentId, setReplyCommentId, setLoading }}
+        >
             {children}
+            {loading && <Loader />}
         </UserContext.Provider>
     );
 }

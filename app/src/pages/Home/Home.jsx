@@ -4,20 +4,26 @@ import dbApi from '../../apis/dbApi';
 import VideoFlatList from '../../components/VideoFlatList';
 import Video from '../../components/Video';
 import { useIsFocused, useNavigation, useNavigationState } from '@react-navigation/native';
+import { UserContext } from '../../context/UserProvider';
 
 export default function Home() {
     const [videos, setVideos] = useState([]);
     const [reload, setReload] = useState(false);
     const [isEnabledHome, setIsEnabledHome] = useState(false);
+    const { setLoading } = useContext(UserContext);
     const navigation = useNavigation();
 
     const fetchVideos = async () => {
         try {
             console.log('fetching...');
+            setLoading(true);
+
             const results = await dbApi.getAllVideos();
 
             console.log('complete');
             setVideos(results);
+            setLoading(false);
+            setReload(false);
         } catch (error) {
             console.log('fetch video error: ', error);
         }
@@ -68,6 +74,7 @@ export default function Home() {
                 <VideoFlatList
                     videos={videos}
                     setVideos={setVideos}
+                    reload={reload}
                     setReload={setReload}
                     isEnabledHome={isEnabledHome}
                 />

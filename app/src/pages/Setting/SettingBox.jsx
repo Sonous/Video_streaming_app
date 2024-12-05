@@ -4,7 +4,7 @@ import SettingItem from './SettingItem';
 import { UserContext } from '../../context/UserProvider';
 
 export default function SettingBox({ label, data, navigation }) {
-    const { setIsAuth, setUser, user } = useContext(UserContext);
+    const { setIsAuth, setUser, user, setLoading } = useContext(UserContext);
 
     const handleEvent = (item) => {
         if (item.nav) {
@@ -35,7 +35,7 @@ export default function SettingBox({ label, data, navigation }) {
                         onPress={async () => {
                             try {
                                 if (typeof item.onPress === 'function') {
-                                    await item.onPress(setIsAuth, setUser, user.userId);
+                                    await item.onPress(setIsAuth, setUser, user.userId, setLoading);
                                 }
 
                                 handleEvent(item);

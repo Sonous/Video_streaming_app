@@ -26,8 +26,7 @@ export default function Login({ navigation }) {
     const [password, setPassword] = useState('');
     const [isError, setIsError] = useState(false);
     const [errorEmail, setErrorEmail] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const { setUser, setIsAuth } = useContext(UserContext);
+    const { setUser, setIsAuth, setLoading } = useContext(UserContext);
 
     // Login with github
     const [request, response, promptAsync] = useAuthRequest(
@@ -46,6 +45,7 @@ export default function Login({ navigation }) {
     const handleResponse = async () => {
         try {
             if (response?.type === 'success') {
+                setLoading(true);
                 const { code } = response.params;
 
                 const { access_token } = await createTokenWithCode(code);
@@ -56,6 +56,7 @@ export default function Login({ navigation }) {
 
                 setUser(user);
                 setIsAuth(true);
+                setLoading(false);
                 navigation.popToTop();
             }
         } catch (error) {
@@ -71,12 +72,15 @@ export default function Login({ navigation }) {
         }
     };
 
+    // Login with email password
     const handleLoginWithEmailPassword = async () => {
         try {
+            setLoading(true);
             const user = await authApi.login(email, password);
 
             setUser(user);
             setIsAuth(true);
+            setLoading(false);
             navigation.popToTop();
         } catch (error) {
             if (error.code === 'auth/wrong-password') {
