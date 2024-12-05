@@ -42,7 +42,7 @@ export default function Inbox() {
     };
 
     useEffect(() => {
-        if (isAuth) {
+        if (user) {
             const unsubscribe = db
                 .collection('rooms')
                 .where('participants', 'array-contains', user.userId)
@@ -60,11 +60,11 @@ export default function Inbox() {
                 unsubscribe();
             };
         }
-    }, []);
-
+    }, [user]);
+    // console.log(user.userId);
     return (
         <>
-            {isAuth ? (
+            {user ? (
                 <View className="px-5 gap-3">
                     <View className="py-3">
                         <Text className="text-center text-xl font-semibold">Inbox</Text>

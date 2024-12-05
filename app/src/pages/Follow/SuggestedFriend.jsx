@@ -10,6 +10,7 @@ export default function SuggestedFriend() {
     const [searchValue, setSearchValue] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [noFriendfollowers, setNoFriendFollowers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { user } = useContext(UserContext);
 
@@ -31,9 +32,11 @@ export default function SuggestedFriend() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
+                setIsLoading(true);
                 const users = await dbApi.getUserByName(debouncedValue, user?.userId);
 
                 setSearchResults(users);
+                setIsLoading(false);
             } catch (error) {
                 console.error(error);
             }
@@ -46,29 +49,33 @@ export default function SuggestedFriend() {
         <ScrollView>
             <View className="px-5 py-3 gap-5">
                 <Search searchValue={searchValue} setSearchValue={setSearchValue} placeholder={'Search by name'} />
-                <View className="gap-5">
-                    <Text>{searchResults.length > 0 ? 'More friends' : 'Suggested accounts'}</Text>
+                {isLoading ? (
+                    <Text>Loading...</Text>
+                ) : (
                     <View className="gap-5">
-                        {searchResults.length > 0 ? (
-                            <>
-                                {searchResults.map((user, index) => (
-                                    <UserCard key={index} {...user} noFriendfollowers={noFriendfollowers} />
-                                ))}
-                            </>
-                        ) : (
-                            <>
-                                {noFriendfollowers.map((follower, index) => (
-                                    <UserCard
-                                        key={index}
-                                        suggestedAccount
-                                        noFriendfollowers={noFriendfollowers}
-                                        {...follower}
-                                    />
-                                ))}
-                            </>
-                        )}
+                        <Text>{searchResults.length > 0 ? 'More friends' : 'Suggested accounts'}</Text>
+                        <View className="gap-5">
+                            {searchResults.length > 0 ? (
+                                <>
+                                    {searchResults.map((user, index) => (
+                                        <UserCard key={index} {...user} noFriendfollowers={noFriendfollowers} />
+                                    ))}
+                                </>
+                            ) : (
+                                <>
+                                    {noFriendfollowers.map((follower, index) => (
+                                        <UserCard
+                                            key={index}
+                                            suggestedAccount
+                                            noFriendfollowers={noFriendfollowers}
+                                            {...follower}
+                                        />
+                                    ))}
+                                </>
+                            )}
+                        </View>
                     </View>
-                </View>
+                )}
             </View>
         </ScrollView>
     );

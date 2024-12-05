@@ -13,7 +13,7 @@ export default function Signup({ navigation }) {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [ErrorEmail, setErrorEmail] = useState('');
     const [ErrorConfirmPassword, setErrorConfirmPassword] = useState('');
-    const { setUser, setIsAuth } = useContext(UserContext);
+    const { setUser, setIsAuth, setLoading } = useContext(UserContext);
 
     const handleValidEmail = (input) => {
         if (input && !validateEmail(input)) {
@@ -33,10 +33,13 @@ export default function Signup({ navigation }) {
 
     const handleSignup = async () => {
         try {
+            setLoading(true);
+
             const user = await authApi.register(email, password);
 
             setUser(user);
             setIsAuth(true);
+            setLoading(false);
             navigation.popToTop();
         } catch (error) {
             console.error(error);

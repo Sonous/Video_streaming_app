@@ -2,14 +2,17 @@ import React, { memo, useEffect, useState } from 'react';
 import { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import dbApi from '../apis/dbApi';
 import ExtendComment from './ExtendComment';
+import { Text } from 'react-native';
 
 function CommentList({ commentIds, commentVideoHandler, commentInputRef, commentInputValue, setVideos }) {
     const [comments, setComments] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchComment = async () => {
             try {
                 console.log('getting comments...');
+                setIsLoading(true);
 
                 const data = await Promise.all(
                     commentIds.map(async (id) => {
@@ -26,6 +29,7 @@ function CommentList({ commentIds, commentVideoHandler, commentInputRef, comment
                 console.log('complete getting comments');
 
                 setComments(data);
+                setIsLoading(false);
             } catch (error) {
                 console.log('fetch comment error: ', error);
             }
@@ -60,25 +64,33 @@ function CommentList({ commentIds, commentVideoHandler, commentInputRef, comment
         //     enableDynamicSizing={false}
         //     showsVerticalScrollIndicator={false}
         // />
-        <BottomSheetScrollView>
-            {comments
-                .filter((item) => !item.parentCommentId)
-                .map((item, index) => {
-                    const subComments = comments.filter((comment) => comment.parentCommentId === item.commentId);
+        <>
+            {isLoading ? (
+                <Text>Loading...</Text>
+            ) : (
+                <BottomSheetScrollView>
+                    {comments
+                        .filter((item) => !item.parentCommentId)
+                        .map((item, index) => {
+                            const subComments = comments.filter(
+                                (comment) => comment.parentCommentId === item.commentId,
+                            );
 
-                    return (
-                        <ExtendComment
-                            item={item}
-                            subCommentIds={subComments}
-                            commentVideoHandler={commentVideoHandler}
-                            commentInputRef={commentInputRef}
-                            commentInputValue={commentInputValue}
-                            key={index}
-                            setVideos={setVideos}
-                        />
-                    );
-                })}
-        </BottomSheetScrollView>
+                            return (
+                                <ExtendComment
+                                    item={item}
+                                    subCommentIds={subComments}
+                                    commentVideoHandler={commentVideoHandler}
+                                    commentInputRef={commentInputRef}
+                                    commentInputValue={commentInputValue}
+                                    key={index}
+                                    setVideos={setVideos}
+                                />
+                            );
+                        })}
+                </BottomSheetScrollView>
+            )}
+        </>
     );
 }
 

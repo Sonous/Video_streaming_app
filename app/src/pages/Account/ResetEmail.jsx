@@ -12,6 +12,7 @@ import dbApi from '../../apis/dbApi';
 export default function ResetEmail({ navigation }) {
     const [email, setEmail] = useState(auth.currentUser.email);
     const [errorEmail, setErrorEmail] = useState('');
+    const { setLoading } = useContext(UserContext);
 
     const handleValidEmail = (input) => {
         if (input && !validateEmail(input)) {
@@ -23,18 +24,15 @@ export default function ResetEmail({ navigation }) {
 
     const handleSave = async () => {
         try {
+            setLoading(true);
             await auth.currentUser.updateEmail(email);
 
             await dbApi.updateUserInfo(auth.currentUser.uid, {
                 email,
             });
 
-            Alert.alert('Update successfully!', '', [
-                {
-                    text: 'Ok',
-                    onPress: () => navigation.goBack(),
-                },
-            ]);
+            setLoading(false);
+            navigation.goBack();
         } catch (error) {
             // Alert.alert(error.message);
             console.error(error);

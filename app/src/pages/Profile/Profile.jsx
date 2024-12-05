@@ -29,7 +29,7 @@ export default function Profile({ navigation }) {
     const [person, setPerson] = useState(null);
     const [relationship, setRelationShip] = useState('stranger');
     const [reload, setReload] = useState(false);
-    const { isAuth, user } = useContext(UserContext);
+    const { isAuth, user, setLoading } = useContext(UserContext);
     const route = useRoute();
 
     // console.log(postedVideos);
@@ -114,6 +114,8 @@ export default function Profile({ navigation }) {
 
     const handleFollow = async () => {
         if (user) {
+            setLoading(true);
+
             await dbApi.updateUserInfo(person?.userId, {
                 followers: [...person.followers, user?.userId],
             });
@@ -122,12 +124,14 @@ export default function Profile({ navigation }) {
             });
 
             setReload(!reload);
+            setLoading(false);
         } else {
             Alert.alert('Please log into an existing account!');
         }
     };
 
     const handleRemoveFollow = async () => {
+        setLoading(true);
         await dbApi.updateUserInfo(person?.userId, {
             followers: person.followers.filter((follower) => follower !== user?.userId),
         });
@@ -136,6 +140,7 @@ export default function Profile({ navigation }) {
         });
 
         setReload(!reload);
+        setLoading(false);
     };
 
     const handleOpenMessage = () => {

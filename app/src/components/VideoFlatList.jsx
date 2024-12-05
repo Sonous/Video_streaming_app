@@ -7,6 +7,7 @@ const { height } = Dimensions.get('window');
 export default function VideoFlatList({
     videos = [],
     setVideos,
+    reload,
     setReload,
     isBottomTab = true,
     flatListRef,
@@ -71,6 +72,9 @@ export default function VideoFlatList({
                 onViewableItemsChanged={viewabilityConfigCallback}
                 viewabilityConfig={viewabilityConfig}
                 scrollEnabled={isEnableFlatList}
+                refreshing={reload}
+                // onRefresh={̣̣() => console.log('refreshing')}
+                onRefresh={() => setReload(true)}
             />
         </View>
     );

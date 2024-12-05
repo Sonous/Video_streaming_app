@@ -27,12 +27,14 @@ const settingItems = [
                 title: 'Logout',
                 showArrow: false,
                 nav: 'BottomNav',
-                async onPress(setIsAuth, setUser, userId) {
+                async onPress(setIsAuth, setUser, userId, setLoading) {
                     try {
+                        setLoading(true);
                         await authApi.logout(userId);
 
                         setUser(null);
                         setIsAuth(false);
+                        setLoading(false);
                     } catch (error) {
                         throw error;
                     }

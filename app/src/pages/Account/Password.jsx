@@ -11,7 +11,7 @@ export default function Password({ navigation }) {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [ErrorConfirmPassword, setErrorConfirmPassword] = useState('');
-    const { user } = useContext(UserContext);
+    const { user, setLoading } = useContext(UserContext);
 
     const handleValidComfirmPass = (input) => {
         if (input && newPassword !== input) {
@@ -21,20 +21,18 @@ export default function Password({ navigation }) {
         }
     };
 
-    const handleSignup = async () => {
+    const handleChangePassword = async () => {
         try {
+            setLoading(true);
+
             const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
 
             await auth.currentUser.reauthenticateWithCredential(credential);
 
             await auth.currentUser.updatePassword(newPassword);
 
-            Alert.alert('Update successfully', '', [
-                {
-                    text: 'Ok',
-                    onPress: () => navigation.goBack(),
-                },
-            ]);
+            setLoading(false);
+            navigation.goBack();
         } catch (error) {
             if (error.code === 'auth/wrong-password') {
                 Alert.alert('Wrong current password');
@@ -42,10 +40,6 @@ export default function Password({ navigation }) {
                 console.error('Lỗi khi đổi mật khẩu:', error.message);
             }
         }
-    };
-
-    const handleNavLogin = () => {
-        navigation.navigate('Login');
     };
 
     return (
@@ -71,9 +65,9 @@ export default function Password({ navigation }) {
                     {ErrorConfirmPassword && <Text className="text-red-600">{ErrorConfirmPassword}</Text>}
                 </View>
                 <Button
-                    title={'Sign up'}
+                    title={'Change password'}
                     type={'primary'}
-                    onPress={handleSignup}
+                    onPress={handleChangePassword}
                     disabled={!newPassword || !currentPassword || !confirmPassword || !!ErrorConfirmPassword}
                 />
             </View>
