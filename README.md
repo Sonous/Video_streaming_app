@@ -33,8 +33,6 @@
 - [Cài đặt](#-cài-đặt)
 - [Cấu hình Firebase](#-cấu-hình-firebase)
 - [Chạy ứng dụng](#-chạy-ứng-dụng)
-- [Screenshots](#-screenshots)
-- [Tác giả](#-tác-giả)
 
 ---
 
