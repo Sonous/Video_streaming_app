@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import React, { useContext, useState } from 'react';
 import SettingLayout from '../layouts/SettingLayout';
 import Input from '../components/Input';
@@ -42,7 +42,19 @@ export default function Signup({ navigation }) {
             setLoading(false);
             navigation.popToTop();
         } catch (error) {
-            console.error(error);
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    Alert.alert('Email has already existed!');
+                    setLoading(false);
+                    return;
+                case 'auth/weak-password':
+                    Alert.alert('Password must be at least 6 characters!');
+                    setLoading(false);
+                    return;
+            }
+
+            console.log(error.code);
+            setLoading(false);
         }
     };
 

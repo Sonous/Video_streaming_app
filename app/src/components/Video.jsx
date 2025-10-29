@@ -20,14 +20,19 @@ const { height, width } = Dimensions.get('window');
 function Video({ video, setVideos, setReload, setEnableFlatList, setCommentModalVisible, isBottomTab }) {
     const [endSlice, setEndSlice] = useState(40);
     const { user, replyCommentId, setReplyCommentId } = useContext(UserContext);
-    const [isLike, setIsLike] = useState(video.likes.includes(user?.userId));
-    const [isMark, setIsMark] = useState(video.marks.includes(user?.userId));
+    const [isLike, setIsLike] = useState(false);
+    const [isMark, setIsMark] = useState(false);
     const [isClickLikeBtn, setIsClickLikeBtn] = useState(false);
     const [isClickMarkBtn, setIsClickMarkBtn] = useState(false);
     const [commentModalState, setCommentModalState] = useState(-1);
     const [commentInputValue, setCommentInputValue] = useState('');
     const [duration, setDuration] = useState(0);
     const navigation = useNavigation();
+
+    useEffect(() => {
+        setIsLike(video.likes.includes(user?.userId));
+        setIsMark(video.marks.includes(user?.userId));
+    }, [user]);
 
     // Config video
     const bottomTabHeight = isBottomTab ? useBottomTabBarHeight() : 0;

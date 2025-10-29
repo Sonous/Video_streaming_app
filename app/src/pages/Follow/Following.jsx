@@ -30,7 +30,7 @@ export default function Following() {
 
     return (
         <View className="px-5 py-3">
-            <View>
+            <View className="gap-5">
                 {following.length > 0 ? (
                     <>
                         {following.map((user, index) => (

@@ -37,6 +37,7 @@ export default function ShowVideo() {
     useEffect(() => {
         if (initVideoId) {
             const index = videos.findIndex((video) => video.videoId === initVideoId);
+            console.log(index);
             if (index !== -1) {
                 flatListRef.current?.scrollToIndex({
                     index,

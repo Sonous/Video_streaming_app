@@ -7,11 +7,11 @@ const { height } = Dimensions.get('window');
 export default function VideoFlatList({
     videos = [],
     setVideos,
-    reload,
+    reload = false,
     setReload,
     isBottomTab = true,
     flatListRef,
-    isEnabledHome,
+    isEnabledHome = true,
 }) {
     const [isEnableFlatList, setEnableFlatList] = useState(true);
     const [isCommentModalVisible, setCommentModalVisible] = useState(false);
@@ -73,8 +73,9 @@ export default function VideoFlatList({
                 viewabilityConfig={viewabilityConfig}
                 scrollEnabled={isEnableFlatList}
                 refreshing={reload}
-                // onRefresh={̣̣() => console.log('refreshing')}
-                onRefresh={() => setReload(true)}
+                onRefresh={() => {
+                    if (typeof setReload === 'function') setReload(true);
+                }}
             />
         </View>
     );
