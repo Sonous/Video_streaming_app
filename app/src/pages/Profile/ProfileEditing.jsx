@@ -11,7 +11,7 @@ import storageApi from '../../apis/storageApi';
 import dbApi from '../../apis/dbApi';
 
 export default function ProfileEditing({ navigation }) {
-    const { user, setUser } = useContext(UserContext);
+    const { user, setUser, setLoading } = useContext(UserContext);
 
     const handleShowInput = (dest) => {
         navigation.navigate(dest);
@@ -26,6 +26,7 @@ export default function ProfileEditing({ navigation }) {
             });
 
             if (!result.canceled) {
+                setLoading(true);
                 const avatarProcess = await storageApi.uploadFile(
                     result.assets[0].uri,
                     `images/${result.assets[0].fileName}`,
@@ -37,9 +38,7 @@ export default function ProfileEditing({ navigation }) {
                     profilePicture: avatarDownloadUrl,
                 });
 
-                const newUserInfo = await dbApi.getUserData(user.userId);
-
-                setUser((prev) => ({ ...prev, ...newUserInfo }));
+                setLoading(false);
             }
         } catch (error) {
             console.error(error);

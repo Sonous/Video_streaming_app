@@ -28,7 +28,7 @@ export default function Follower() {
 
     return (
         <View className="px-5 py-3">
-            <View>
+            <View className="gap-5">
                 {follower.length > 0 ? (
                     <>
                         {follower.map((user, index) => (

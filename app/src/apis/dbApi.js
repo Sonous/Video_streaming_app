@@ -29,6 +29,7 @@ const dbApi = {
                 .doc(uid)
                 .set({
                     username: displayName || generateRandomString(),
+                    name: displayName || generateRandomString(),
                     email,
                     profilePicture,
                     bio: '',
@@ -83,6 +84,8 @@ const dbApi = {
             const results = await db.collection('users').get();
 
             const users = results.docs.reduce((list, doc) => {
+                console.log(doc.data().name);
+
                 const username = doc.data().username.toLowerCase();
                 const accountName = doc.data().name.toLowerCase();
 
@@ -101,7 +104,7 @@ const dbApi = {
 
             return users;
         } catch (error) {
-            console.error(error);
+            console.error('fjudisjfa', error);
             throw error;
         }
     },

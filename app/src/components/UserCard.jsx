@@ -78,7 +78,14 @@ export default function UserCard({
             activeOpacity={0.5}
             onPress={handleNavToProfile}
         >
-            <Image source={{ uri: profilePicture }} className="w-[70px] h-[70px] rounded-full" />
+            {profilePicture ? (
+                <Image source={{ uri: profilePicture }} className="w-[70px] h-[70px] rounded-full" />
+            ) : (
+                <Image
+                    source={require('../assets/images/avatar_placeholder.png')}
+                    className="w-[70px] h-[70px] rounded-full"
+                />
+            )}
 
             <View className="gap-3 w-[290px] flex-row  flex-1">
                 <View className="flex-1">

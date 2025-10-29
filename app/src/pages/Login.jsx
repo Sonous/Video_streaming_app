@@ -83,11 +83,12 @@ export default function Login({ navigation }) {
             setLoading(false);
             navigation.popToTop();
         } catch (error) {
-            if (error.code === 'auth/wrong-password') {
-                Alert.alert('Wrong current password');
+            if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                Alert.alert('Wrong username or password');
             } else {
                 console.error('Lỗi khi đổi mật khẩu:', error.message);
             }
+            setLoading(false);
         }
     };
 
